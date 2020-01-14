@@ -14,8 +14,8 @@ class BotModel(gym.env):
         self.r_speed=0
         self.is_over=False
 
-        self.observation_space = b.Box(0, 1.0, shape=(int(821/4), int(1598/4),180))
-        self.action_space = b.Box(0, 1.0, shape=(int(-128/2), int(127/2)))
+        self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
+        self.action_space = [-1,-.25,0,.25,1] #b.Box(0, 1.0, shape=(int(-128/2), int(127/2)))
 
     def step(self, action):
         self.l_speed += action[0]
