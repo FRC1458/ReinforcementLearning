@@ -36,6 +36,7 @@ class BotModel(gym.env):
         #in the list "action", the first value is the left wheel speed.
         self.r_speed += action[1]
         #in the list "action", the second value is the right wheel speed.
+        
         if self.l_speed > 127:
             self.l_speed = 127
         elif self.l_speed < -128:
@@ -44,22 +45,35 @@ class BotModel(gym.env):
             self.r_speed = 127
         elif self.r_speed < -128:
             self.r_speed = -128
-        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
+
+        if self.l_speed == self.r_speed:
+          distance = l_speed * t
+          self.x = self.x + (distance * np.sin(facing))
+          self.y = self.y + (distance * np.cos(facing))
+
+        else:
+            #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
+            radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
+            #this is the physical radius of the robot.
+            z = (self.l_speed-self.r_speed)*self.t/self.w
+            self.x = self.x+(radius*np.sin(facing))-(radius*np.sin(facing-z))
+            self.y = self.y-(radius*np.cos(facing))+(radius*np.cos(facing-z))
+            self.facing -= z
+            #see desmos link on slack for explanation of above three lines. It's essentially direction calculations
         
-        radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
-        #this is the physical radius of the robot.
-        z = (self.l_speed-self.r_speed)*self.t/self.w
-        self.x = self.x+(radius*np.sin(facing))-(radius*np.sin(facing-z))
-        self.y = self.y-(radius*np.cos(facing))+(radius*np.cos(facing-z))
-        self.facing -= z
-        #see desmos link on slack for explanation of above three lines. It's essentially direction calculations
-        
-        while z<0:
-            z+=2*np.pi
-        while z>2*np.pi:
-            z-=2*np.pi
-        #making sure that the z-angle measurement doesn't go below 0 or above 2pi
-        
+            while z<0:
+                z+=2*np.pi
+                
+            while z>2*np.pi:
+                z-=2*np.pi
+
+            while self.facing<0:
+                self.facing+=2*np.pi
+
+            while self.facing>2*np.pi:
+                self.facing-=2*np.pi
+            #making sure that the z-angle measurement doesn't go below 0 or above 2pi
+                
         ob = dict(x=self.x, y=self.y, facing=self.facing, l_speed=self.l_speed, r_speed=self.r_speed)
         #when it's training, it takes the data from the environment and says "I have this to use now."
         reward = self.checkreward()
