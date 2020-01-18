@@ -50,14 +50,16 @@ class BotModel(gym.env):
             self.r_speed = 127
         elif self.r_speed < -128:
             self.r_speed = -128
+        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
 
         if self.l_speed == self.r_speed:
           distance = l_speed * t
+          #calculate the distance traveled.
           self.x = self.x + (distance * np.sin(facing))
           self.y = self.y + (distance * np.cos(facing))
+          #update my x and y positions, now that I know how far I've traveled.
 
         else:
-            #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
             radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
             #this is the physical radius of the robot.
             z = (self.l_speed-self.r_speed)*self.t/self.w
