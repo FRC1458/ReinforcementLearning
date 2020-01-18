@@ -26,6 +26,7 @@ class BotModel(gym.env):
         #the game is not over yet.
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
+        self.reward #the points rewarded to the robot during the simulation
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
@@ -108,10 +109,11 @@ class BotModel(gym.env):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
                 self.is_over = True
                 #end the game!
-                return 100.0
+                self.reward += 100
                 #i get a lot of points
-        return 0.0
-        #if im not in the right position, i get no points.; :(
+            if self.y <= -0.364 * self.x + 6.255 or self.y <= 0.364 * self.x - 23.626 or self.y >= 0.364 * self.x = 153.545 or self.y >= -0.364 * self.x + 183.426:
+                self.reward -= 100
+                #robot ran into a barrier and loses points
 
     def render(self, mode='human'):
         #graphics; nothing yet
