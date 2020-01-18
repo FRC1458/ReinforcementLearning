@@ -2,7 +2,6 @@ import numpy as np
 import gym.spaces.box as b
 #we need numpy and Gym present here.
 
-
 class BotModel(gym.env):
     def __init__(self):
         self.w=1
@@ -116,13 +115,13 @@ class BotModel(gym.env):
                 
         if self.y <= -0.364 * self.x + 6.255 or self.y <= 0.364 * self.x - 23.626 or self.y >= 0.364 * self.x = 153.545 or self.y >= -0.364 * self.x + 183.426:
             self.reward -= 100
-                #robot ran into a barrier and loses points
+                #robot ran into an outside barrier and loses points
             
         if self.x > 821 or self.y > 1598 or self.x < 0 or self.y<0:
             self.is_over = True
             return -100.0
         return 0.0
-        #if im not in the right position, i get no points.; :(
+        #if im not in the right position, i get no points. :(
 
     def render(self, mode='human'):
         #graphics; nothing yet
