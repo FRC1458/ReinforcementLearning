@@ -24,6 +24,9 @@ class BotModel(gym.env):
         #right wheel speed
         self.is_over=False
         #the game is not over yet.
+        self.minShootDist = 5 #This is the MINIMUM Distance from away the target
+        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
+
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
         #The dimensions of the field. The 360 degree vision is split into 36 parts, 10 degrees each.
@@ -99,13 +102,13 @@ class BotModel(gym.env):
         #spit back all the data about what I'm doing right now.
 
     def checkreward(self):
-        if self.l_speed == 0.0 and self.r_speed == 0.0 and self.x < 821 and self.x > 621 and self.y < 1398 and self.y > 1348:
+        if self.l_speed == 0.0 and self.r_speed == 0.0 and ((58 - self.x) ** 2 - (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 - (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and y <= -self.x + 217):
         #If I'm in position in front of the goal and facing the right way,
             if np.round(self.facing,1) == np.round(np.tan((1598-self.y)/(638-self.x)),3):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
                 self.is_over = True
                 #end the game!
-                return 1000.0
+                return 100.0
                 #i get a lot of points
         return 0.0
         #if im not in the right position, i get no points.; :(
