@@ -31,7 +31,7 @@ class BotModel(gym.env):
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
-        #The dimensions of the field. The 360 degree vision is split into 36 parts, 10 degrees each.
+        #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles for now)
         #The box is technically a 1x1x1 cube.
         self.action_space = b.Box(0, 1.0, shape=(int(-128/2), int(127/2)))
         #The range of speeds that the wheel can have.
@@ -41,7 +41,6 @@ class BotModel(gym.env):
         #in the list "action", the first value is the left wheel speed.
         self.r_speed += action[1]
         #in the list "action", the second value is the right wheel speed.
-        
         if self.l_speed > 127:
             self.l_speed = 127
         elif self.l_speed < -128:
