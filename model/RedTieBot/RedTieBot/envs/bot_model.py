@@ -115,13 +115,15 @@ class BotModel(gym.env):
                 
         if self.y <= -0.364 * self.x + 6.255 or self.y <= 0.364 * self.x - 23.626 or self.y >= 0.364 * self.x = 153.545 or self.y >= -0.364 * self.x + 183.426:
             self.reward -= 100
-                #robot ran into the triangles in the corners and loses points
+            #robot ran into the triangles in the corners and loses points
 
         if self.y > 87.526 and self.y < 95.146 and self.x > 0 and self.x < 14.1:
             self.reward -= 100
+            #robot ran into the north spinner and loses points
 
         if self.y > 64.68 and self.y < 72.3 and self.x > 68 and self.x < 82.1:
             self.reward -= 100
+            #robot ran into the south spinner and loses points
             
         if self.x > 821 or self.y > 1598 or self.x < 0 or self.y<0:
             self.is_over = True
