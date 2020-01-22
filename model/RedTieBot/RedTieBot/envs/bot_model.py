@@ -125,7 +125,7 @@ class BotModel(gym.env):
             self.reward -= 100
             #robot ran into the south spinner and loses points
             
-        if self.x > 821 or self.y > 1598 or self.x < 0 or self.y<0:
+        if self.x > 82.1 or self.y > 159.8 or self.x < 0 or self.y<0:
             self.is_over = True
             self.reward -= 100
             #robot went outside the barrier
