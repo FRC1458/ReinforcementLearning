@@ -142,7 +142,12 @@ class BotModel(gym.env):
           if (self.y-90.379)>=((91.336-90.379)/(14.097-14.529))*(self.x-14.529) and (self.y-90.799)<=((91.76-90.799)/(15.056-15.42))*(self.x-15.42):
             self.reward -= 100
             #robot ran into the top left pillar of the rendezvous point
-            
+        if (self.y-68.07)>=((68.494-68.07)/(68-67.039))*(self.x-67.039) and (self.y-69.027)<=((69.451-69.027)/(67.568-66.607))*(self.x-66.607):
+           if (self.y-68.07)>=((69.027-68.07)/(66.607-67.039))*(self.x-67.039) and (self.y-68.494)<=((69.451-68.494)/(67.568-68))*(self.x-68)
+             self.reward -= 100
+else:
+  print("Out")
+
     def render(self, mode='human'):
         #graphics; nothing yet
         return
