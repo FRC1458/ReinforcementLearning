@@ -26,7 +26,7 @@ class BotModel(gym.env):
         #the game is not over yet.
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
-        self.reward #the points rewarded to the robot during the simulation
+        self.reward = 0#the points rewarded to the robot during the simulation
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
@@ -134,10 +134,15 @@ class BotModel(gym.env):
           if (self.y-105.979)>=((106.936-105.979)/(49.478-49.91))*(self.x-49.91) and (self.y-106.403)<=((107.36-106.403)/(50.439-50.871))*(self.x-50.871):
             self.reward -= 100
             #robot ran into the top right pillar of the rendezvous point
-        
-        self.reward = 0
-        #if im not in the right position, i get no points. :(
-
+        if (self.y-52.469)>=((52.883-52.469)/(32.604-31.666))*(self.x-31.666) and (self.y-53.403)<=((53.817-53.403)/(32.182-31.244))*(self.x-31.244):
+          if (self.y-52.469)>=((53.403-52.469)/(31.244-31.666))*(self.x-31.666) and (self.y-52.883)<=((53.817-52.883)/(32.182-32.604))*(self.x-32.604):
+            self.reward -= 100
+            #robot ran into the bottom left pillar of the rendezvous point
+        if (self.y-90.379)>=((90.799-90.379)/(15.42-14.529))*(self.x-14.529) and (self.y-91.336)<=((91.76-91.336)/(15.056-14.097))*(self.x-14.097):
+          if (self.y-90.379)>=((91.336-90.379)/(14.097-14.529))*(self.x-14.529) and (self.y-90.799)<=((91.76-90.799)/(15.056-15.42))*(self.x-15.42):
+            self.reward -= 100
+            #robot ran into the top left pillar of the rendezvous point
+            
     def render(self, mode='human'):
         #graphics; nothing yet
         return
