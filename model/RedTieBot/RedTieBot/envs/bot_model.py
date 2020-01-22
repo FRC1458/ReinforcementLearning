@@ -129,6 +129,11 @@ class BotModel(gym.env):
             self.is_over = True
             self.reward -= 100
             #robot went outside the barrier
+
+        if (self.y-105.979)>=((106.403-105.979)/(50.871-49.91))*(self.x-49.91) and (self.y-106.936)<=((107.36-106.936)/(50.439-49.478))*(self.x-49.478):
+          if (self.y-105.979)>=((106.936-105.979)/(49.478-49.91))*(self.x-49.91) and (self.y-106.403)<=((107.36-106.403)/(50.439-50.871))*(self.x-50.871):
+            self.reward -= 100
+            #robot ran into the top right pillar of the rendezvous point
         
         self.reward = 0
         #if im not in the right position, i get no points. :(
@@ -140,4 +145,3 @@ class BotModel(gym.env):
     def close(self):
         #closing the graphics; nothing yet
         return
-
