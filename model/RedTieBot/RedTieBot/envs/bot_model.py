@@ -145,8 +145,7 @@ class BotModel(gym.env):
         if (self.y-68.07)>=((68.494-68.07)/(68-67.039))*(self.x-67.039) and (self.y-69.027)<=((69.451-69.027)/(67.568-66.607))*(self.x-66.607):
            if (self.y-68.07)>=((69.027-68.07)/(66.607-67.039))*(self.x-67.039) and (self.y-68.494)<=((69.451-68.494)/(67.568-68))*(self.x-68)
              self.reward -= 100
-else:
-  print("Out")
+
 
     def render(self, mode='human'):
         #graphics; nothing yet
