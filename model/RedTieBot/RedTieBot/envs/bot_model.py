@@ -133,6 +133,7 @@ class BotModel(gym.Env):
                 #end the game!
                 self.reward += 100
                 #i get a lot of points
+                
         if self.invalid_point(self.x,self.y):
             self.reward -= 100
             self.is_over = true
@@ -158,22 +159,14 @@ class BotModel(gym.Env):
           if (y-105.979)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871):
             return True 
             #robot ran into the top right pillar of the rendezvous point
-
         if (y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244):
           if (y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604):
             return True 
             #robot ran into the bottom left pillar of the rendezvous point
-
         if (y-90.379)>=((90.799-90.379)/(15.42-14.529))*(x-14.529) and (y-91.336)<=((91.76-91.336)/(15.056-14.097))*(x-14.097):
           if (y-90.379)>=((91.336-90.379)/(14.097-14.529))*(x-14.529) and (y-90.799)<=((91.76-90.799)/(15.056-15.42))*(x-15.42):
             return True 
             #robot ran into the top left pillar of the rendezvous point
-
-        if (self.y-68.07)>=((68.494-68.07)/(68-67.039))*(self.x-67.039) and (self.y-69.027)<=((69.451-69.027)/(67.568-66.607))*(self.x-66.607):
-           if (self.y-68.07)>=((69.027-68.07)/(66.607-67.039))*(self.x-67.039) and (self.y-68.494)<=((69.451-68.494)/(67.568-68))*(self.x-68):
-             return True
-             #robot ran into the bottom right pillar of the rendezvous point
-
         return False
 
     def render(self, mode='human'):

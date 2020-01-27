@@ -8,6 +8,7 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+import RedTieBot
 
 def build_state(features):
     return int("".join(map(lambda feature: str(int(feature)), features)))
@@ -39,7 +40,9 @@ class Model:
         self.feature_transformer = feature_transformer
 
         num_states = 10**env.observation_space.shape[0]
-        num_actions = env.action_space.n
+        ###################################
+        num_actions = env.action_space    #.n
+        ###################################
         self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
 
     def predict(self, s):
