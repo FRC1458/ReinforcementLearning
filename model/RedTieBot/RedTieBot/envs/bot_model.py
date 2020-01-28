@@ -13,7 +13,7 @@ class ActionSpace:
 
     def fromQ(self, val):
         print(val)
-        return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces)))-1]
+        return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces))) - 1]
     
 class BotModel(gym.Env):
     def __init__(self):
@@ -175,7 +175,7 @@ class BotModel(gym.Env):
             #robot ran into the triangles in the corners and loses points
 
         if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
-            self.reward -= 100
+            return True 
             #robot ran into the north spinner and loses points
 
         if y > 64.68 and y < 72.3 and x > 68 and x < 82.1:
