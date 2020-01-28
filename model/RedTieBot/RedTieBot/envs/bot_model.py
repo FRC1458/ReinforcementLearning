@@ -109,7 +109,7 @@ class BotModel(gym.Env):
     def reset(self):
         T = True
         while T:
-            self.x0 = 82.1 * np.random.random_sample()
+            self.x0 = 82 * np.random.random_sample()
             self.y0 = 159.8 * np.random.random_sample()
             if not self.invalid_point(self.x0,self.y0):
                 T = False
