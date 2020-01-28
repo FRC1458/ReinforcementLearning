@@ -67,34 +67,35 @@ class BotModel(gym.Env):
             self.r_speed = -128
         #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
         print("step")
-        
-        if self.l_speed == self.r_speed:
-          distance = self.l_speed * self.t
-          #calculate the distance traveled.
-          self.x = self.x + (distance * np.sin(self.facing))
-          self.y = self.y + (distance * np.cos(self.facing))
-          #update my x and y positions, now that I know how far I've traveled.
+        self.checkreward()
+        if not self.is_over:
+            if self.l_speed == self.r_speed:
+              distance = self.l_speed * self.t
+              #calculate the distance traveled.
+              self.x = self.x + (distance * np.sin(self.facing))
+              self.y = self.y + (distance * np.cos(self.facing))
+              #update my x and y positions, now that I know how far I've traveled.
 
-        else:
-            radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
-            #this is the physical radius of the robot.
-            z = (self.l_speed-self.r_speed)*self.t/self.w
-            self.x = self.x+(radius*np.sin(self.facing))-(radius*np.sin(self.facing-z))
-            self.y = self.y-(radius*np.cos(self.facing))+(radius*np.cos(self.facing-z))
-            self.facing -= z
-            #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
-            while z<0:
-                z+=2*np.pi
+            else:
+                radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
+                #this is the physical radius of the robot.
+                z = (self.l_speed-self.r_speed)*self.t/self.w
+                self.x = self.x+(radius*np.sin(self.facing))-(radius*np.sin(self.facing-z))
+                self.y = self.y-(radius*np.cos(self.facing))+(radius*np.cos(self.facing-z))
+                self.facing -= z
+                #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
+                while z<0:
+                    z+=2*np.pi
                 
-            while z>2*np.pi:
-                z-=2*np.pi
+                while z>2*np.pi:
+                    z-=2*np.pi
 
-            while self.facing<0:
-                self.facing+=2*np.pi
+                while self.facing<0:
+                    self.facing+=2*np.pi
 
-            while self.facing>2*np.pi:
-                self.facing-=2*np.pi
-            #making sure that the z-angle measurement doesn't go below 0 or above 2pi
+                while self.facing>2*np.pi:
+                    self.facing-=2*np.pi
+                #making sure that the z-angle measurement doesn't go below 0 or above 2pi
                 
         ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
         #when it's training, it takes the data from the environment and says "I have this to use now."
@@ -133,10 +134,40 @@ class BotModel(gym.Env):
                 #end the game!
                 self.reward += 100
                 #i get a lot of points
-                
-        if self.invalid_point(self.x,self.y):
-            self.reward -= 100
-            self.is_over = true
+              
+        x = self.x
+        y = self.y
+        t = 0
+        facing = self.facing
+        for check in range(100):
+            t+=self.t/100
+            if self.l_speed == self.r_speed:
+                distance = self.l_speed * t
+                  #calculate the distance traveled.
+                x =  x + (distance * np.sin(facing))
+                y =  y + (distance * np.cos(facing))
+              #update my x and y positions, now that I know how far I’ve traveled.
+            else:
+                radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
+                  #this the radius the robot travels.
+                z = (self.l_speed-self.r_speed)*t/self.w
+                x =  x+(radius*np.sin(facing))-(radius*np.sin(facing-z))
+                y =  y-(radius*np.cos(facing))+(radius*np.cos(facing-z))
+                facing -= z
+                #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
+            while z<0:
+                z+=2*np.pi
+            while z>2*np.pi:
+                z-=2*np.pi
+            while  facing<0:
+                facing+=2*np.pi
+            while  facing>2*np.pi:
+                facing-=2*np.pi
+                #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
+            if self.invalid_point(x,y):
+                self.reward -= 100
+                self.is_over = True
+                return
             
     def invalid_point(self,x,y):
         if y <= -0.364 * x + 6.255 or y <= 0.364 * x - 23.626 or y >= 0.364 * x + 153.545 or y >= -0.364 * x + 183.426:
@@ -159,14 +190,22 @@ class BotModel(gym.Env):
           if (y-105.979)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871):
             return True 
             #robot ran into the top right pillar of the rendezvous point
+
         if (y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244):
           if (y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604):
             return True 
             #robot ran into the bottom left pillar of the rendezvous point
+
         if (y-90.379)>=((90.799-90.379)/(15.42-14.529))*(x-14.529) and (y-91.336)<=((91.76-91.336)/(15.056-14.097))*(x-14.097):
           if (y-90.379)>=((91.336-90.379)/(14.097-14.529))*(x-14.529) and (y-90.799)<=((91.76-90.799)/(15.056-15.42))*(x-15.42):
             return True 
             #robot ran into the top left pillar of the rendezvous point
+
+        if (self.y-68.07)>=((68.494-68.07)/(68-67.039))*(self.x-67.039) and (self.y-69.027)<=((69.451-69.027)/(67.568-66.607))*(self.x-66.607):
+           if (self.y-68.07)>=((69.027-68.07)/(66.607-67.039))*(self.x-67.039) and (self.y-68.494)<=((69.451-68.494)/(67.568-68))*(self.x-68):
+             return True
+             #robot ran into the bottom right pillar of the rendezvous point
+
         return False
 
     def render(self, mode='human'):

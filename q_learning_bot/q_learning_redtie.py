@@ -18,14 +18,16 @@ def to_bin(value, bins):
 
 class FeatureTransformer:
     def __init__(self):
-        self.bot_xposition_bins = np.linspace(0, 821, 821*4)
-        self.bot_yposition_bins = np.linspace(0, 1598, 1598*4)
-        self.bot_facing_bins = np.linspace(0,2*np.pi,720)
+        '''
+        self.bot_xposition_bins = np.linspace(0, 821, 82)
+        self.bot_yposition_bins = np.linspace(0, 1598, 160)
+        self.bot_facing_bins = np.linspace(0,2*np.pi,24)
         self.bot_lspeed_bins = np.linspace(-128,127,256)
         self.bot_rspeed_bins = np.linspace(-128,127,256)
-
+        '''
     def transform(self, observation):
-        x, y, facing, l_speed, r_speed = observation
+        x, y, facing, l_speed, r_speed = observation.values()
+        '''
         return build_state([
             to_bin(x, self.bot_xposition_bins),
             to_bin(y, self.bot_yposition_bins),
@@ -33,19 +35,21 @@ class FeatureTransformer:
             to_bin(l_speed, self.bot_lspeed_bins),
             to_bin(r_speed, self.bot_rspeed_bins),
         ])
-
+        '''
+        return x*24*160+y*24+facing
 class Model:
     def __init__(self, env, feature_transformer):
         self.env = env
         self.feature_transformer = feature_transformer
 
-        num_states = 10**env.observation_space.shape[0]
-        ###################################
-        num_actions = env.action_space    #.n
-        ###################################
+        num_states = 82*160*24#10**env.observation_space.shape[0]
+        ############
+        num_actions = 9
+        print(num_states)
         self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
 
     def predict(self, s):
+        print(s)
         x=self.feature_transformer.transform(s)
         return self.Q[x]
 
@@ -58,7 +62,7 @@ class Model:
             return self.env.action_space.sample()
         else:
             p=self.predict(s)
-            return np.argmax(p)
+            return self.env.action_space.fromQ(np.argmax(p))
 
 def play_one(model,eps,gamma):
     observation=env.reset()
@@ -75,7 +79,7 @@ def play_one(model,eps,gamma):
             reward=-300
 
         G=reward+gamma*np.max(model.predict(observation))
-        model.update(prev_observation, action,G)
+        model.update(prev_observation, action, G)
         iters+=1
     return totalreward
 
@@ -100,6 +104,7 @@ if __name__ == '__main__':
 
     N=10000
     totalrewards=np.empty(N)
+    import pdb; pdb.set_trace()
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
