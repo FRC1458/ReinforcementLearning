@@ -13,7 +13,7 @@ class ActionSpace:
 
     def fromQ(self, val):
         print(val)
-        return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces)))]
+        return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces)))-1]
     
 class BotModel(gym.Env):
     def __init__(self):
