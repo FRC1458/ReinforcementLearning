@@ -150,19 +150,19 @@ class BotModel(gym.Env):
             else:
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                   #this the radius the robot travels.
-                z = (self.l_speed-self.r_speed)*t/self.w
-                x =  x+(radius*np.sin(facing))-(radius*np.sin(facing-z))
-                y =  y-(radius*np.cos(facing))+(radius*np.cos(facing-z))
-                facing -= z
+                z2 = (self.l_speed-self.r_speed)*t/self.w
+                x =  x+(radius*np.sin(facing))-(radius*np.sin(facing-z2))
+                y =  y-(radius*np.cos(facing))+(radius*np.cos(facing-z2))
+                facing -= z2
                 #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
-            while z<0:
-                z+=2*np.pi
-            while z>2*np.pi:
-                z-=2*np.pi
-            while  facing<0:
-                facing+=2*np.pi
-            while  facing>2*np.pi:
-                facing-=2*np.pi
+                while z2<0:
+                    z2+=2*np.pi
+                while z2>2*np.pi:
+                    z2-=2*np.pi
+                while  facing<0:
+                    facing+=2*np.pi
+                while  facing>2*np.pi:
+                    facing-=2*np.pi
                 #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
             if self.invalid_point(x,y):
                 self.reward -= 100
