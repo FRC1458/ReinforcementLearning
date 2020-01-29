@@ -1,7 +1,8 @@
 import numpy as np
 import gym.spaces.box as b
 import gym
-#we need numpy and Gym present here.
+import pygame as pg
+#we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
 
 class ActionSpace:
     def __init__(self):
@@ -209,9 +210,18 @@ class BotModel(gym.Env):
         return False
 
     def render(self, mode='human'):
-        #graphics; nothing yet
-        return
+        pg.init()
+        screen = pg.display.set_mode([1000, 1000])
+        #initialize the whole thing and create a window.
+        
+        for event in pg.event.get():
+        if event.type == pg.QUIT:
+            self.close()
+        #if the window close button is clicked, close the window.
+
+        screen.fill((255, 255, 255))
+        #fill the background with white
 
     def close(self):
-        #closing the graphics; nothing yet
+        pg.quit()
         return
