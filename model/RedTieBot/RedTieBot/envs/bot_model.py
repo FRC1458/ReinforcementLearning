@@ -42,8 +42,6 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
-        self.rewardPosCount = 0
-        self.rewardNegCount = 0
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
@@ -130,6 +128,8 @@ class BotModel(gym.Env):
         #spit back all the data about what I'm doing right now.
         
     def checkreward(self):
+        self.rewardPosCount = 0
+        self.rewardNegCount = 0
         if self.l_speed == 0.0 and self.r_speed == 0.0 and ((58 - self.x) ** 2 - (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 - (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
         #If I'm in position in front of the goal and facing the right way,
             if np.round(self.facing,1) <= np.round(np.tan((1598-self.y)/(638-self.x)),3):
