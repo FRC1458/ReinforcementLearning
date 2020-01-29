@@ -42,6 +42,8 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
+        self.rewardPosCount = 0
+        self.rewardNegCount = 0
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
@@ -105,7 +107,7 @@ class BotModel(gym.Env):
         #checks to see if it's over.
         info = dict()
         #openai needs that line to be happy. means nothing
-        return ob, self.reward, episode_over, info
+        return ob, self.reward, episode_over, info, self.rewardPosCount, self.rewardNegCount
         #spit back all that data.
         
     def reset(self):
@@ -136,6 +138,8 @@ class BotModel(gym.Env):
                 #end the game!
                 self.reward += 100
                 #i get a lot of points
+                self.rewardPosCount += 1
+
               
         x = self.x
         y = self.y
@@ -169,7 +173,7 @@ class BotModel(gym.Env):
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
-                return
+                self.rewardNegcount += 1
             
     def invalid_point(self,x,y):
         if y <= -0.364 * x + 6.255 or y <= 0.364 * x - 23.626 or y >= 0.364 * x + 153.545 or y >= -0.364 * x + 183.426:
@@ -214,14 +218,11 @@ class BotModel(gym.Env):
         pg.init()
         screen = pg.display.set_mode([1000, 1000])
         #initialize the whole thing and create a window.
-        
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                self.close()
-            #if the window close button is clicked, close the window.
 
         screen.fill((255, 255, 255))
         #fill the background with white
+
+
 
     def close(self):
         pg.quit()
