@@ -1,3 +1,4 @@
+#coding: utf-8
 import numpy as np
 import gym.spaces.box as b
 import gym
@@ -144,10 +145,10 @@ class BotModel(gym.Env):
             t+=self.t/100
             if self.l_speed == self.r_speed:
                 distance = self.l_speed * t
-                  #calculate the distance traveled.
-                x =  x + (distance * np.sin(facing))
-                y =  y + (distance * np.cos(facing))
-              #update my x and y positions, now that I know how far I’ve traveled.
+                #calculate the distance traveled.
+                x = x + (distance*np.sin(facing))
+                y = y + (distance*np.cos(facing))
+            #update my x and y positions, now that I know how far I’ve traveled.
             else:
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                   #this the radius the robot travels.
@@ -215,9 +216,9 @@ class BotModel(gym.Env):
         #initialize the whole thing and create a window.
         
         for event in pg.event.get():
-        if event.type == pg.QUIT:
-            self.close()
-        #if the window close button is clicked, close the window.
+            if event.type == pg.QUIT:
+                self.close()
+            #if the window close button is clicked, close the window.
 
         screen.fill((255, 255, 255))
         #fill the background with white
