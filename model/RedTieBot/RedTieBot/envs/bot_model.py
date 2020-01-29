@@ -203,8 +203,8 @@ class BotModel(gym.Env):
             return True 
             #robot ran into the top left pillar of the rendezvous point
 
-        if (self.y-68.07)>=((68.494-68.07)/(68-67.039))*(self.x-67.039) and (self.y-69.027)<=((69.451-69.027)/(67.568-66.607))*(self.x-66.607):
-           if (self.y-68.07)>=((69.027-68.07)/(66.607-67.039))*(self.x-67.039) and (self.y-68.494)<=((69.451-68.494)/(67.568-68))*(self.x-68):
+        if (y-68.07)>=((68.494-68.07)/(68-67.039))*(x-67.039) and (y-69.027)<=((69.451-69.027)/(67.568-66.607))*(x-66.607):
+           if (y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68):
              return True
              #robot ran into the bottom right pillar of the rendezvous point
 
