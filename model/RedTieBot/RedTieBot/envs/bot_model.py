@@ -126,7 +126,7 @@ class BotModel(gym.Env):
         #spit back all the data about what I'm doing right now.
         
     def checkreward(self):
-        if self.l_speed == 0 and self.r_speed == 0 and ((58 - self.x) ** 2 - (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 - (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
+        if self.l_speed == 0.0 and self.r_speed == 0.0 and ((58 - self.x) ** 2 - (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 - (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
         #If I'm in position in front of the goal and facing the right way,
             if np.round(self.facing,1) == np.round(np.tan((1598-self.y)/(638-self.x)),3):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
@@ -182,7 +182,7 @@ class BotModel(gym.Env):
             return True 
             #robot ran into the south spinner and loses points
             
-        if x > 82.1 or y > 159.8 or x < 0 or y<0:
+        if x > 82 or y > 159.8 or x < 0 or y<0:
             return True 
             #robot went outside the barrier
 
