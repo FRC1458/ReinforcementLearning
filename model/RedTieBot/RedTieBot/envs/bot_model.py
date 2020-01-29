@@ -69,8 +69,7 @@ class BotModel(gym.Env):
             self.r_speed = 127
         elif self.r_speed < -128:
             self.r_speed = -128
-        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
-        print("step")
+        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
         self.checkreward()
         if not self.is_over:
             if self.l_speed == self.r_speed:
@@ -174,10 +173,12 @@ class BotModel(gym.Env):
                 self.reward -= 100
                 self.is_over = True
                 self.rewardNegCount += 1
+                print(x,y)
             
     def invalid_point(self,x,y):
         if y <= -0.364 * x + 6.255 or y <= 0.364 * x - 23.626 or y >= 0.364 * x + 153.545 or y >= -0.364 * x + 183.426:
             return True
+        
             #robot ran into the triangles in the corners and loses points
 
         if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
