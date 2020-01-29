@@ -136,7 +136,7 @@ class BotModel(gym.Env):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
                 self.is_over = True
                 #end the game!
-                self.reward += 100
+                self.reward += 10
                 #i get a lot of points
                 self.rewardPosCount += 1
 
