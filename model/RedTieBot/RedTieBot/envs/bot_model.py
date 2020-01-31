@@ -1,4 +1,3 @@
-#coding: utf-8
 import numpy as np
 import gym.spaces.box as b
 import gym
@@ -23,15 +22,13 @@ class BotModel(gym.Env):
         #width of robot
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
-        self.x0=0
-        #robot's starting x-position
-        self.y0=0
-        #robot's starting y-position
+        self.x0, self.y0 = self.generate_point()
+        #robot's starting x-position and y-position
         self.x=self.x0
         #robot's current x-position.
         self.y=self.y0
         #robot's current y-position.
-        self.facing=0
+        self.facing=2*np.pi * np.random.random_sample()
         #the direction that the robot is facing in radians, in standard position
         self.l_speed=0
         #left wheel speed
@@ -42,8 +39,6 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
-        self.rewardPosCount = 0
-        self.rewardNegCount = 0
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
@@ -69,7 +64,8 @@ class BotModel(gym.Env):
             self.r_speed = 127
         elif self.r_speed < -128:
             self.r_speed = -128
-        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
+        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
+        print("step")
         self.checkreward()
         if not self.is_over:
             if self.l_speed == self.r_speed:
@@ -106,16 +102,11 @@ class BotModel(gym.Env):
         #checks to see if it's over.
         info = dict()
         #openai needs that line to be happy. means nothing
-        return ob, self.reward, episode_over, info, self.rewardPosCount, self.rewardNegCount
+        return ob, self.reward, episode_over, info
         #spit back all that data.
         
     def reset(self):
-        T = True
-        while T:
-            self.x0 = 82 * np.random.random_sample()
-            self.y0 = 159.8 * np.random.random_sample()
-            if not self.invalid_point(self.x0,self.y0):
-                T = False
+        self.x0, self.y0 = self.generate_point()
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
@@ -135,10 +126,8 @@ class BotModel(gym.Env):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
                 self.is_over = True
                 #end the game!
-                self.reward += 10
+                self.reward += 100
                 #i get a lot of points
-                self.rewardPosCount += 1
-
               
         x = self.x
         y = self.y
@@ -148,10 +137,10 @@ class BotModel(gym.Env):
             t+=self.t/100
             if self.l_speed == self.r_speed:
                 distance = self.l_speed * t
-                #calculate the distance traveled.
-                x = x + (distance*np.sin(facing))
-                y = y + (distance*np.cos(facing))
-            #update my x and y positions, now that I know how far I’ve traveled.
+                  #calculate the distance traveled.
+                x =  x + (distance * np.sin(facing))
+                y =  y + (distance * np.cos(facing))
+              #update my x and y positions, now that I know how far I’ve traveled.
             else:
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                   #this the radius the robot travels.
@@ -172,13 +161,11 @@ class BotModel(gym.Env):
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
-                self.rewardNegCount += 1
-                print(x,y)
+                return
             
     def invalid_point(self,x,y):
         if y <= -0.364 * x + 6.255 or y <= 0.364 * x - 23.626 or y >= 0.364 * x + 153.545 or y >= -0.364 * x + 183.426:
             return True
-        
             #robot ran into the triangles in the corners and loses points
 
         if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
@@ -215,15 +202,26 @@ class BotModel(gym.Env):
 
         return False
 
+    def generate_point(self):
+        T = True
+        while T:
+            x = 82 * np.random.random_sample()
+            y = 159.8 * np.random.random_sample()
+            if not self.invalid_point(x,y):
+                return x,y
+            
     def render(self, mode='human'):
         pg.init()
         screen = pg.display.set_mode([1000, 1000])
         #initialize the whole thing and create a window.
+        
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.close()
+        #if the window close button is clicked, close the window.
 
         screen.fill((255, 255, 255))
         #fill the background with white
-
-
 
     def close(self):
         pg.quit()

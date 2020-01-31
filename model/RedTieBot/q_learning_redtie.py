@@ -72,7 +72,7 @@ def play_one(model,eps,gamma):
     while not done and iters<1000:
         action=model.sample_action(observation, eps)
         prev_observation=observation
-        observation, reward, done, info, rewardPosCount, rewardNegCount = env.step(action)
+        observation, reward, done, info = env.step(action)
 
         totalreward+= reward
         if done and iters<199:
