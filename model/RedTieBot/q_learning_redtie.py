@@ -117,6 +117,5 @@ if __name__ == '__main__':
     plt.plot(totalrewards)
     plt.title("Rewards")
     plt.show()
-    print(rewardPosCount)
-    print(rewardNegcount)
+    print(totalrewards)
     plot_running_avg(totalrewards)
