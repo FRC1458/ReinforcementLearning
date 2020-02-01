@@ -185,7 +185,7 @@ class BotModel(gym.Env):
             return True 
             #robot ran into the north spinner and loses points
 
-        if y > 64.68 and y < 72.3 and x > 68 and x < 82.1:
+        if y > 64.68 and y < 72.3 and x > 68 and x < 82:
             return True 
             #robot ran into the south spinner and loses points
             
