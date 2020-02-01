@@ -2,10 +2,10 @@
 import numpy as np
 import gym.spaces.box as b
 import gym
-import turtle as tu
+#import turtle as tu
 #we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
-a=tu.Turtle()
-a.speed(0)
+#a=tu.Turtle()
+#a.speed(0)
 class ActionSpace:
     def __init__(self):
         self._spaces = np.array([(-1,-1), (-1,0), (-1,1), (0,-1),
