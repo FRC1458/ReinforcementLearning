@@ -8,6 +8,7 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+from statistics import mean
 import RedTieBot
 
 def build_state(features):
@@ -72,7 +73,7 @@ def play_one(model,eps,gamma):
     while not done and iters<1000:
         action=model.sample_action(observation, eps)
         prev_observation=observation
-        observation, reward, done, info, rewardPosCount, rewardNegCount = env.step(action)
+        observation, reward, done, info = env.step(action)
 
         totalreward+= reward
         if done and iters<199:
@@ -111,12 +112,9 @@ if __name__ == '__main__':
         totalrewards[n] = totalreward
         if n%100==0:
             print("episode:",n," total reward:",totalreward," eps:",eps)
-            print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
+            print("avg reward for last 100 episodes:", mean(totalrewards[-100:]))
     print("total steps:", totalrewards.sum())
-
     plt.plot(totalrewards)
     plt.title("Rewards")
     plt.show()
-    print(rewardPosCount)
-    print(rewardNegcount)
     plot_running_avg(totalrewards)
