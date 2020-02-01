@@ -49,6 +49,8 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
 
+        self.path = []
+
     def step(self, action):
         try:
             self.l_speed += action[0]
@@ -125,6 +127,7 @@ class BotModel(gym.Env):
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
         #spit back all the data about what I'm doing right now.
         
+        
     def checkreward(self):
         if self.l_speed == 0.0 and self.r_speed == 0.0 and ((58 - self.x) ** 2 - (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 - (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
         #If I'm in position in front of the goal and facing the right way,
@@ -167,7 +170,10 @@ class BotModel(gym.Env):
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
-                print(x,y)
+                print("crash: ("+str(x)+","+str(y)+")")
+                return
+            else:
+                print("not crash: ("+str(x)+","+str(y)+")")
             
     def invalid_point(self, x, y):
         if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):

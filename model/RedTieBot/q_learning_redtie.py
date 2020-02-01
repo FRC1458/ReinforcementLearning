@@ -67,14 +67,15 @@ def play_one(model,eps,gamma):
     done=False
     totalreward=0
     iters=0
+    path = []
     while not done and iters<1000:
         action=model.sample_action(observation, eps)
         prev_observation=observation
         observation, reward, done, info = env.step(action)
-
+        path.append((observation, reward))
         totalreward+= reward
-        if done and iters<199:
-            reward=-300
+        #if done and iters<199:
+        #    reward=-300
 
         G=reward+gamma*np.max(model.predict(observation))
         model.update(prev_observation, action, G)
