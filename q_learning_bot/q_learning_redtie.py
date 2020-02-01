@@ -48,7 +48,10 @@ class Model:
         self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
 
     def predict(self, s):
+<<<<<<< HEAD
        
+=======
+>>>>>>> fixed rajarshis bruh moment
         x=self.feature_transformer.transform(s)
         return self.Q[x]
 

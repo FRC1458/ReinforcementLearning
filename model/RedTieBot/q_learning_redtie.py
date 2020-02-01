@@ -45,11 +45,9 @@ class Model:
         num_states = 82*160*24#10**env.observation_space.shape[0]
         ############
         num_actions = 9
-        print(num_states)
         self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
 
     def predict(self, s):
-        print(s)
         x=self.feature_transformer.transform(s)
         return self.Q[x]
 
@@ -117,3 +115,4 @@ if __name__ == '__main__':
     plt.title("Rewards")
     plt.show()
     plot_running_avg(totalrewards)
+    print(totalrewards)
