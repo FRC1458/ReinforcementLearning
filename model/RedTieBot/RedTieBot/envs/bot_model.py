@@ -42,8 +42,6 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
-        self.rewardPosCount = 0
-        self.rewardNegCount = 0
 
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
@@ -106,7 +104,7 @@ class BotModel(gym.Env):
         #checks to see if it's over.
         info = dict()
         #openai needs that line to be happy. means nothing
-        return ob, self.reward, episode_over, info, self.rewardPosCount, self.rewardNegCount
+        return ob, self.reward, episode_over, info
         #spit back all that data.
         
     def reset(self):
@@ -137,15 +135,13 @@ class BotModel(gym.Env):
                 #end the game!
                 self.reward += 10
                 #i get a lot of points
-                self.rewardPosCount += 1
-
-              
         x = self.x
         y = self.y
         t = 0
         facing = self.facing
         for check in range(100):
             t+=self.t/100
+
             if self.l_speed == self.r_speed:
                 distance = self.l_speed * t
                 #calculate the distance traveled.
@@ -172,13 +168,11 @@ class BotModel(gym.Env):
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
-                self.rewardNegCount += 1
                 print(x,y)
             
-    def invalid_point(self,x,y):
-        if y <= -0.364 * x + 6.255 or y <= 0.364 * x - 23.626 or y >= 0.364 * x + 153.545 or y >= -0.364 * x + 183.426:
+    def invalid_point(self, x, y):
+        if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
             return True
-        
             #robot ran into the triangles in the corners and loses points
 
         if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
@@ -212,7 +206,6 @@ class BotModel(gym.Env):
            if (y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68):
              return True
              #robot ran into the bottom right pillar of the rendezvous point
-
         return False
 
     def render(self, mode='human'):
