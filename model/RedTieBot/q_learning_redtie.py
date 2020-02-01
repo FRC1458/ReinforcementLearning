@@ -111,7 +111,7 @@ if __name__ == '__main__':
         totalrewards[n] = totalreward
         if n%100==0:
             print("episode:",n," total reward:",totalreward," eps:",eps)
-            print("avg reward for last 100 episodes:", mean(totalrewards[-100:]))
+            print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
     print("total steps:", totalrewards.sum())
     plt.plot(totalrewards)
     plt.title("Rewards")
