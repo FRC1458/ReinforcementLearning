@@ -181,7 +181,7 @@ class BotModel(gym.Env):
                 a.pendown()
                 a.circle(0.05)
                 '''
-                print("not crash: ("+str(x)+","+str(y)+")")
+                #print("not crash: ("+str(x)+","+str(y)+")")
             
     def invalid_point(self, x, y):
         if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
