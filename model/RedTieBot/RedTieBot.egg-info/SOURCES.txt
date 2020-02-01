@@ -1,7 +1,0 @@
-README.txt
-setup.py
-RedTieBot.egg-info/PKG-INFO
-RedTieBot.egg-info/SOURCES.txt
-RedTieBot.egg-info/dependency_links.txt
-RedTieBot.egg-info/requires.txt
-RedTieBot.egg-info/top_level.txt
