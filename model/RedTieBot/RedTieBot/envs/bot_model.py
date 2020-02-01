@@ -45,7 +45,7 @@ class BotModel(gym.Env):
         self.reward = 0#the points rewarded to the robot during the simulation
 
 
-        self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10),36))
+        self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
         #The box is technically a 1x1x1 cube.
         self.action_space = ActionSpace()
