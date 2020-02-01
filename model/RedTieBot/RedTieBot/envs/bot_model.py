@@ -55,21 +55,21 @@ class BotModel(gym.Env):
 
     def step(self, action):
         try:
-            self.l_speed += action[0]
+            self.l_speed += 0.1*action[0]
             #in the list "action", the first value is the left wheel speed.
-            self.r_speed += action[1]
+            self.r_speed += 0.1*action[1]
             #in the list "action", the second value is the right wheel speed.
         except Exception as e:
             print(e)
             import pdb; pdb.set_trace()
-        if self.l_speed > 127:
-            self.l_speed = 127
-        elif self.l_speed < -128:
-            self.l_speed = -128
-        if self.r_speed > 127:
-            self.r_speed = 127
-        elif self.r_speed < -128:
-            self.r_speed = -128
+        if self.l_speed > 12.7:
+            self.l_speed = 12.7
+        elif self.l_speed < -12.8:
+            self.l_speed = -12.8
+        if self.r_speed > 12.7:
+            self.r_speed = 12.7
+        elif self.r_speed < -12.8:
+            self.r_speed = -12.8
         #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
         self.checkreward()
         if not self.is_over:
@@ -125,6 +125,8 @@ class BotModel(gym.Env):
         self.l_speed = 0
         #stop the left wheel
         self.r_speed = 0
+        self.is_over = False
+        self.reward = 0
         #stop the right wheel
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
         #spit back all the data about what I'm doing right now.
@@ -172,7 +174,7 @@ class BotModel(gym.Env):
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
-                print("crash: ("+str(x)+","+str(y)+")")
+               # print("crash: ("+str(x)+","+str(y)+")")
                 return
             else:
                 '''
