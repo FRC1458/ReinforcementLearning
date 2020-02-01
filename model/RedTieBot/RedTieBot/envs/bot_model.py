@@ -2,7 +2,6 @@
 import numpy as np
 import gym.spaces.box as b
 import gym
-import pygame as pg
 #we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
 
 class ActionSpace:

@@ -8,7 +8,6 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-from statistics import mean
 import RedTieBot
 
 def build_state(features):
