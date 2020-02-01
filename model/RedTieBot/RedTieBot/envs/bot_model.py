@@ -15,7 +15,7 @@ class ActionSpace:
         return self._spaces[np.random.choice(len(self._spaces))]
 
     def fromQ(self, val):
-        print(val)
+       # print(val)
         return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces))) - 1]
     
 class BotModel(gym.Env):
@@ -43,6 +43,7 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
+
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
@@ -125,8 +126,6 @@ class BotModel(gym.Env):
         #stop the left wheel
         self.r_speed = 0
         #stop the right wheel
-        self.reward = 0
-        self.is_done = 0
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
         #spit back all the data about what I'm doing right now.
         
@@ -134,12 +133,11 @@ class BotModel(gym.Env):
     def checkreward(self):
         if self.l_speed == 0 and self.r_speed == 0 and ((58 - self.x) ** 2 + (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 + (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
         #If I'm in position in front of the goal and facing the right way,
-            if np.round(self.facing,3) <= np.round(np.tan((1598-self.y)/(638-self.x)),3)+np.round(np.pi/24,3) and np.round(self.facing,3) >= np.round(np.tan((1598-self.y)/(638-self.x)),3)-np.round(np.pi/24,3):
+            if np.round(self.facing,1) <= np.round(np.tan((1598-self.y)/(638-self.x)),3):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
-                print("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
                 self.is_over = True
                 #end the game!
-                self.reward += 500
+                self.reward += 100
                 #i get a lot of points
         x = self.x
         y = self.y
@@ -170,7 +168,7 @@ class BotModel(gym.Env):
                     facing+=2*np.pi
                 while  facing>2*np.pi:
                     facing-=2*np.pi
-               #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
+                #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
