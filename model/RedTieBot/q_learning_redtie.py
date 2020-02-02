@@ -80,7 +80,7 @@ def play_one(model,eps,gamma):
         G=reward+gamma*np.max(model.predict(observation))
         model.update(prev_observation, action, G)
         iters+=1
-    return totalreward, G
+    return totalreward
 
 def plot_running_avg(totalrewards):
     N=len(totalrewards)
@@ -104,12 +104,11 @@ if __name__ == '__main__':
     N=10000
     totalrewards=np.empty(N)
     Gs=np.empty(N)
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
-        totalreward,G=play_one(model, eps, gamma)
+        totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
-        Gs[n] = G
         if n%100==0:
             print("episode:",n," total reward:",totalreward," eps:",eps)
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
@@ -117,9 +116,7 @@ if __name__ == '__main__':
     plt.plot(totalrewards)
     plt.title("Rewards")
     plt.show()
-    plt.plot(Gs)
-    plt.title("loss")
-    plt.show()
     plot_running_avg(totalrewards)
     print(totalrewards)
     print(Gs)
+    input("Enter to quit")

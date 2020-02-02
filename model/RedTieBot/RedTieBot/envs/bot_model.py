@@ -125,15 +125,11 @@ class BotModel(gym.Env):
         #stop the left wheel
         self.r_speed = 0
         #stop the right wheel
-        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
-
         self.reward = 0
         self.is_done = False
         self.counter += 1
         self.checkreward()
-        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
-        #spit back all the data about what I'm doing right now.
-        
+        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
         
     def checkreward(self):
         if np.abs(self.l_speed) <= 0.01 and np.abs(self.r_speed) <= 0.01:
