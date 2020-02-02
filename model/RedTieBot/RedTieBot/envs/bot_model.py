@@ -20,14 +20,15 @@ class ActionSpace:
     
 class BotModel(gym.Env):
     def __init__(self):
+        self.minShootDist = 5 #This is the MINIMUM Distance from away the target
+        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
+        self.counter=0
+        self.a=self.reward_point()
         self.w=1
         #width of robot
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
-        self.x0=0
-        #robot's starting x-position
-        self.y0=0
-        #robot's starting y-position
+        self.x0, self.y0, self.facing = self.generate_point()
         self.x=self.x0
         #robot's current x-position.
         self.y=self.y0
@@ -40,10 +41,7 @@ class BotModel(gym.Env):
         #right wheel speed
         self.is_over=False
         #the game is not over yet.
-        self.minShootDist = 5 #This is the MINIMUM Distance from away the target
-        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
-
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
@@ -51,42 +49,49 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
 
-        self.path = []
-
     def step(self, action):
+        if self.is_over:
+            ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
+            #when it's training, it takes the data from the environment and says "I have this to use now."
+            episode_over = self.is_over
+            #checks to see if it's over.
+            info = dict()
+            #openai needs that line to be happy. means nothing
+            return ob, self.reward, episode_over, info
+            #spit back all that data.
         try:
-            self.l_speed += action[0]
+            self.l_speed += 0.2*action[0]
             #in the list "action", the first value is the left wheel speed.
-            self.r_speed += action[1]
+            self.r_speed += 0.2*action[1]
             #in the list "action", the second value is the right wheel speed.
         except Exception as e:
             print(e)
             import pdb; pdb.set_trace()
-        if self.l_speed > 127:
-            self.l_speed = 127
-        elif self.l_speed < -128:
-            self.l_speed = -128
-        if self.r_speed > 127:
-            self.r_speed = 127
-        elif self.r_speed < -128:
-            self.r_speed = -128
+        if self.l_speed > 12.7:
+            self.l_speed = 12.7
+        elif self.l_speed < -12.8:
+            self.l_speed = -12.8
+        if self.r_speed > 12.7:
+            self.r_speed = 12.7
+        elif self.r_speed < -12.8:
+            self.r_speed = -12.8
         #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
         self.checkreward()
         if not self.is_over:
-            if self.l_speed == self.r_speed:
+            if abs(self.l_speed - self.r_speed) < .001:
               distance = self.l_speed * self.t
               #calculate the distance traveled.
-              self.x = self.x + (distance * np.sin(self.facing))
-              self.y = self.y + (distance * np.cos(self.facing))
+              self.x = self.x + (distance * np.sin(self.facing*np.pi/12))
+              self.y = self.y + (distance * np.cos(self.facing*np.pi/12))
               #update my x and y positions, now that I know how far I've traveled.
 
             else:
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                 #this is the physical radius of the robot.
                 z = (self.l_speed-self.r_speed)*self.t/self.w
-                self.x = self.x+(radius*np.sin(self.facing))-(radius*np.sin(self.facing-z))
-                self.y = self.y-(radius*np.cos(self.facing))+(radius*np.cos(self.facing-z))
-                self.facing -= z
+                self.x = self.x+(radius*np.sin(self.facing*np.pi/12))-(radius*np.sin((self.facing*np.pi/12)-z))
+                self.y = self.y-(radius*np.cos(self.facing*np.pi/12))+(radius*np.cos((self.facing*np.pi/12)-z))
+                self.facing -= int(z * 12 / np.pi)
                 #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
                 while z<0:
                     z+=2*np.pi
@@ -95,13 +100,13 @@ class BotModel(gym.Env):
                     z-=2*np.pi
 
                 while self.facing<0:
-                    self.facing+=2*np.pi
+                    self.facing+=24
 
-                while self.facing>2*np.pi:
-                    self.facing-=2*np.pi
+                while self.facing>=24:
+                    self.facing-=24
                 #making sure that the z-angle measurement doesn't go below 0 or above 2pi
                 
-        ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
+        ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
         #when it's training, it takes the data from the environment and says "I have this to use now."
         episode_over = self.is_over
         #checks to see if it's over.
@@ -111,29 +116,29 @@ class BotModel(gym.Env):
         #spit back all that data.
         
     def reset(self):
-        T = True
-        while T:
-            self.x0 = 82 * np.random.random_sample()
-            self.y0 = 159.8 * np.random.random_sample()
-            if not self.invalid_point(self.x0,self.y0):
-                T = False
+        self.x0, self.y0, self.facing = self.generate_point()
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
-        self.facing = 2*np.pi * np.random.random_sample()
         #set facing to a random position
         self.l_speed = 0
         #stop the left wheel
         self.r_speed = 0
         #stop the right wheel
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
+
+        self.reward = 0
+        self.is_done = False
+        self.counter += 1
+        self.checkreward()
+        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
         #spit back all the data about what I'm doing right now.
         
         
     def checkreward(self):
-        if self.l_speed == 0 and self.r_speed == 0 and ((58 - self.x) ** 2 + (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 + (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
+        if np.abs(self.l_speed) <= 0.01 and np.abs(self.r_speed) <= 0.01:
         #If I'm in position in front of the goal and facing the right way,
-            if np.round(self.facing,1) <= np.round(np.tan((1598-self.y)/(638-self.x)),3):
+            if (int(self.x),int(self.y),int(self.facing)) in self.a:
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
                 self.is_over = True
                 #end the game!
@@ -142,7 +147,7 @@ class BotModel(gym.Env):
         x = self.x
         y = self.y
         t = 0
-        facing = self.facing
+        facing = self.facing*np.pi/12
         for check in range(100):
             t+=self.t/100
 
@@ -229,8 +234,34 @@ class BotModel(gym.Env):
         screen.fill((255, 255, 255))
         #fill the background with white
 
+    def generate_point(self):
+        if self.counter >100:
+            T = True
+            facing = 24 * np.random.random_sample()
+            while T:
+                x = 82 * np.random.random_sample()
+                y = 159.8 * np.random.random_sample()
+                if not self.invalid_point(x,y):
+                    return x,y,facing
+        else:
+            return self.a[np.random.choice(len(self.a))]
 
-
+    def reward_point(self):
+        a=[]
+        for x in range(81):
+            for y in range(160):
+                if ((58 - x) ** 2 + (159 - y) ** 2 >= self.minShootDist ** 2 and (58 - x) ** 2 + (159 - y) ** 2 <= self.maxShootDist ** 2 and y <= x + 101 and y <= -x + 217):
+                    if x != 58:
+                        facing=np.arctan((58-x)/(158-y))+np.pi/2
+                    else:
+                        facing=np.pi/2
+                    if facing<0:
+                        facing+=np.pi*2
+                    facing = int(facing*12/np.pi)
+                    if facing > 2:
+                        a.append((x,y,facing))
+        return a
+            
     def close(self):
         pg.quit()
         return
