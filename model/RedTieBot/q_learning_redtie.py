@@ -45,8 +45,27 @@ class Model:
         num_states = 82*160*24#10**env.observation_space.shape[0]
         ############
         num_actions = 9
-        self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
+        self.load()
+        self.counter = 0
 
+    def reset(self):
+        self.counter = 0
+        self.target = None
+
+    def get_target(self):
+        if self.target is None:
+            self.target = self.env.get_a_target
+        return self.target
+
+    def save(self):
+        np.save('save_Q.npy', self.Q)
+
+    def load(self):
+        if os.path.exists('save_Q.npy'):
+            self.Q = np.load('save_Q.npy')
+        else:
+            self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
+            
     def predict(self, s):
         x=self.feature_transformer.transform(s)
         return self.Q[x]
@@ -56,14 +75,36 @@ class Model:
         self.Q[x,a] += 10e-3*(G-self.Q[x,a])
 
     def sample_action(self,s,eps):
+        self.counter += 1
+        if self.counter < 2000:
+            return self.calculated_path(s)
         if np.random.random() < eps:
+            #print('random')
             return self.env.action_space.sample()
         else:
             p=self.predict(s)
+            #print('prob: {}'.format(p))
             return self.env.action_space.fromQ(np.argmax(p))
+
+    def calculated_path(self, observation):
+        x, y, facing = get_target()
+        if self.checkspot(x,y):
+            self.turn(angle=facing):
+            
+    def checkspot(self,x,y):
+        a=self.env.reward_point()
+        for n in range(len(a)):
+            if x in a[n][0] and y in a[n][1]:
+                return True
+        return False
+
+    def turn(self, x=None, y=None, angle=None):
+        if angle != None:
+            
 
 def play_one(model,eps,gamma):
     observation=env.reset()
+    model.reset()
     done=False
     totalreward=0
     iters=0
@@ -72,15 +113,18 @@ def play_one(model,eps,gamma):
         action=model.sample_action(observation, eps)
         prev_observation=observation
         observation, reward, done, info = env.step(action)
-        path.append((observation, reward))
+        path.append((observation, reward, action))
         totalreward+= reward
-        #if done and iters<199:
+        #if done and iters<299==0:
         #    reward=-300
 
         G=reward+gamma*np.max(model.predict(observation))
         model.update(prev_observation, action, G)
         iters+=1
-    return totalreward, G
+
+    if totalreward > 0:
+        print(path)
+    return totalreward
 
 def plot_running_avg(totalrewards):
     N=len(totalrewards)
@@ -103,13 +147,11 @@ if __name__ == '__main__':
 
     N=10000
     totalrewards=np.empty(N)
-    Gs=np.empty(N)
     import pdb; pdb.set_trace()
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
-        totalreward,G=play_one(model, eps, gamma)
+        totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
-        Gs[n] = G
         if n%100==0:
             print("episode:",n," total reward:",totalreward," eps:",eps)
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
@@ -117,9 +159,9 @@ if __name__ == '__main__':
     plt.plot(totalrewards)
     plt.title("Rewards")
     plt.show()
-    plt.plot(Gs)
-    plt.title("loss")
-    plt.show()
     plot_running_avg(totalrewards)
     print(totalrewards)
-    print(Gs)
+    s = input("save file? ")
+    if s in ['y', 'Y', 'yes', 'ok', 'oui']:
+        model.save()
+>>>>>>> Began some code to help facilitate the learning process

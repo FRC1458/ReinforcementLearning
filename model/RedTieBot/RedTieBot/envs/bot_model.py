@@ -62,14 +62,14 @@ class BotModel(gym.Env):
         except Exception as e:
             print(e)
             import pdb; pdb.set_trace()
-        if self.l_speed > 12.7:
-            self.l_speed = 12.7
-        elif self.l_speed < -12.8:
-            self.l_speed = -12.8
-        if self.r_speed > 12.7:
-            self.r_speed = 12.7
-        elif self.r_speed < -12.8:
-            self.r_speed = -12.8
+        if self.l_speed > 127:
+            self.l_speed = 127
+        elif self.l_speed < -128:
+            self.l_speed = -128
+        if self.r_speed > 127:
+            self.r_speed = 127
+        elif self.r_speed < -128:
+            self.r_speed = -128
         #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
         self.checkreward()
         if not self.is_over:
@@ -125,13 +125,12 @@ class BotModel(gym.Env):
         self.l_speed = 0
         #stop the left wheel
         self.r_speed = 0
-        self.is_over = False
         self.reward = 0
-        #stop the right wheel
-        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
-        #spit back all the data about what I'm doing right now.
-        
-        
+        self.is_over = False
+        self.counter += 1
+        self.checkreward()
+        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
+      
     def checkreward(self):
         if self.l_speed == 0 and self.r_speed == 0 and ((58 - self.x) ** 2 + (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 + (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
         #If I'm in position in front of the goal and facing the right way,
@@ -139,15 +138,17 @@ class BotModel(gym.Env):
             #If I'm in position in front of the goal and facing the right way (but with extra parameters)
                 self.is_over = True
                 #end the game!
-                self.reward += 100
+                print(20*'>' + 'Reached')
+                self.reward += 500
                 #i get a lot of points
         x = self.x
         y = self.y
         t = 0
-        facing = self.facing
-        for check in range(100):
-            t+=self.t/100
 
+        facing = self.facing*np.pi/12
+        N = 10
+        for check in range(N):
+            t+=self.t/N
             if self.l_speed == self.r_speed:
                 distance = self.l_speed * t
                 #calculate the distance traveled.
@@ -174,7 +175,8 @@ class BotModel(gym.Env):
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
-               # print("crash: ("+str(x)+","+str(y)+")")
+
+                #print("crash: ("+str(x)+","+str(y)+")")
                 return
             else:
                 '''
@@ -232,7 +234,37 @@ class BotModel(gym.Env):
         #fill the background with white
 
 
+    def generate_point(self):
+        if self.counter >1000:
+            T = True
+            facing = np.random.randint(24)
+            while T:
+                x = np.random.randint(82)
+                y = np.random.randint(159)
+                if not self.invalid_point(x,y):
+                    return x,y,facing
+        else:
+            return self.a[np.random.choice(len(self.a))]
 
+    def get_a_target(self):
+        return self.a[np.random.choice(len(self.a))]
+
+    def reward_point(self):
+        a=[]
+        for x in range(81):
+            for y in range(160):
+                if ((58 - x) ** 2 + (159 - y) ** 2 >= self.minShootDist ** 2 and (58 - x) ** 2 + (159 - y) ** 2 <= self.maxShootDist ** 2 and y <= x + 101 and y <= -x + 217):
+                    if x != 58:
+                        facing=np.arctan((58-x)/(158-y))+np.pi/2
+                    else:
+                        facing=np.pi/2
+                    if facing<0:
+                        facing+=np.pi*2
+                    facing = int(facing*12/np.pi)
+                    if facing > 2:
+                        a.append((x,y,facing))
+        return a
+            
     def close(self):
         pg.quit()
         return
