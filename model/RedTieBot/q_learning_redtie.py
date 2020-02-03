@@ -164,4 +164,3 @@ if __name__ == '__main__':
     s = input("save file? ")
     if s in ['y', 'Y', 'yes', 'ok', 'oui']:
         model.save()
->>>>>>> Began some code to help facilitate the learning process
