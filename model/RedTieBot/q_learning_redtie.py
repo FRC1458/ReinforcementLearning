@@ -42,9 +42,9 @@ class Model:
         self.env = env
         self.feature_transformer = feature_transformer
 
-        num_states = 82*160*24#10**env.observation_space.shape[0]
+        self.num_states = 82*160*24#10**env.observation_space.shape[0]
         ############
-        num_actions = 9
+        self.num_actions = 9
         self.load()
         self.counter = 0
 
@@ -64,7 +64,7 @@ class Model:
         if os.path.exists('save_Q.npy'):
             self.Q = np.load('save_Q.npy')
         else:
-            self.Q = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
+            self.Q = np.random.uniform(low=-1, high=1, size=(self.num_states, self.num_actions))
             
     def predict(self, s):
         x=self.feature_transformer.transform(s)
@@ -76,8 +76,8 @@ class Model:
 
     def sample_action(self,s,eps):
         self.counter += 1
-        if self.counter < 2000:
-            return self.calculated_path(s)
+       # if self.counter < 2000:
+       #     return self.calculated_path(s)
         if np.random.random() < eps:
             #print('random')
             return self.env.action_space.sample()
@@ -86,20 +86,20 @@ class Model:
             #print('prob: {}'.format(p))
             return self.env.action_space.fromQ(np.argmax(p))
 
-    def calculated_path(self, observation):
-        x, y, facing = get_target()
-        if self.checkspot(x,y):
-            self.turn(angle=facing):
+ #   def calculated_path(self, observation):
+  #      x, y, facing = get_target()
+   #     if self.checkspot(x,y):
+    #        self.turn(angle=facing):
             
-    def checkspot(self,x,y):
-        a=self.env.reward_point()
-        for n in range(len(a)):
-            if x in a[n][0] and y in a[n][1]:
-                return True
-        return False
+     #def checkspot(self,x,y):
+        #a=self.env.reward_point()
+        #for n in range(len(a)):
+       #     if x in a[n][0] and y in a[n][1]:
+      #          return True
+     #   return False
 
-    def turn(self, x=None, y=None, angle=None):
-        if angle != None:
+    #def turn(self, x=None, y=None, angle=None):
+        #if angle != None:
             
 
 def play_one(model,eps,gamma):
@@ -164,4 +164,3 @@ if __name__ == '__main__':
     s = input("save file? ")
     if s in ['y', 'Y', 'yes', 'ok', 'oui']:
         model.save()
->>>>>>> Began some code to help facilitate the learning process
