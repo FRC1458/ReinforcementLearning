@@ -134,6 +134,10 @@ def plot_running_avg(totalrewards):
     plt.plot(running_avg)
     plt.title('Rewards')
     plt.show()
+    print(totalrewards)
+    s = input("save file? ")
+    if s in ['y', 'Y', 'yes', 'ok', 'oui']:
+        model.save()
 
 if __name__ == '__main__':
     env = gym.make('redtiebot-v0')
@@ -146,7 +150,7 @@ if __name__ == '__main__':
         monitor_dir = './' + filename + '_' + str(datetime.now())
         env = wrappers.Monitor(env, monitor_dir)
 
-    N=5000
+    N=50000
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
     for n in range(N):
@@ -160,7 +164,3 @@ if __name__ == '__main__':
     #plt.title("Rewards")
     #plt.show()
     plot_running_avg(totalrewards)
-    print(totalrewards)
-    s = input("save file? ")
-    if s in ['y', 'Y', 'yes', 'ok', 'oui']:
-        model.save()
