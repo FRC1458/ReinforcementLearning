@@ -132,7 +132,6 @@ def plot_running_avg(totalrewards):
     for t in range(N):
         running_avg[t]=totalrewards[max(0,t-100):(t+1)].mean()
     plt.plot(running_avg)
-    plt.show()
 
 if __name__ == '__main__':
     env = gym.make('redtiebot-v0')
@@ -145,7 +144,7 @@ if __name__ == '__main__':
         monitor_dir = './' + filename + '_' + str(datetime.now())
         env = wrappers.Monitor(env, monitor_dir)
 
-    N=10000
+    N=5000
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
     for n in range(N):
@@ -154,8 +153,8 @@ if __name__ == '__main__':
         totalrewards[n] = totalreward
         if n%100==0:
             print("episode:",n," total reward:",totalreward," eps:",eps)
-            print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
-    print("total rewards:", totalrewards.sum())
+            print("avg reward for last 100 episodes: " + str(totalreward))
+    print("total rewards: " + str(totalrewards.sum()))
     plt.plot(totalrewards)
     plt.title("Rewards")
     plt.show()
