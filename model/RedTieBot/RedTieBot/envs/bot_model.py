@@ -44,7 +44,7 @@ class BotModel(gym.Env):
         self.is_over=False
         #the game is not over yet.
         self.reward = 0#the points rewarded to the robot during the simulation
-
+        self.counter=0
 
         self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
