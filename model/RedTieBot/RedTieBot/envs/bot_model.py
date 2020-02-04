@@ -22,7 +22,7 @@ class BotModel(gym.Env):
     def __init__(self):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
-        a=self.reward_point()
+        self.a=self.reward_point()
         self.w=1
         #width of robot
         self.t=0.5
