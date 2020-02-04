@@ -132,6 +132,8 @@ def plot_running_avg(totalrewards):
     for t in range(N):
         running_avg[t]=totalrewards[max(0,t-100):(t+1)].mean()
     plt.plot(running_avg)
+    plt.title('Rewards')
+    plt.show()
 
 if __name__ == '__main__':
     env = gym.make('redtiebot-v0')
