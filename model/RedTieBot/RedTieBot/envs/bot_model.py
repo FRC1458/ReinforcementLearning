@@ -133,12 +133,11 @@ class BotModel(gym.Env):
       
     def checkreward(self):
         if self.l_speed == 0 and self.r_speed == 0 and (self.x, self.y, self.facing in self.a):
-        #If I'm in position in front of the goal and facing the right way,
-        #If I'm in position in front of the goal and facing the right way (but with extra parameters)
+        #If I'm in position in front of the goal and facing the right way...
             self.is_over = True
             #end the game!
             print(20*'>' + 'Reached')
-            self.reward += 500
+            self.reward += 100
             #i get a lot of points
         x = self.x
         y = self.y
