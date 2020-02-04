@@ -51,7 +51,6 @@ class BotModel(gym.Env):
         #The box is technically a 1x1x1 cube.
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
-
         self.path = []
 
     def step(self, action):

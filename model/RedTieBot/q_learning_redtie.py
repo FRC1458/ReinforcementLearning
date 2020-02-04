@@ -68,7 +68,7 @@ class Model:
             
     def predict(self, s):
         x=self.feature_transformer.transform(s)
-        return self.Q[x]
+        return self.Q[int(x)]
 
     def update(self,s,a,G):
         x=self.feature_transformer.transform(s)
