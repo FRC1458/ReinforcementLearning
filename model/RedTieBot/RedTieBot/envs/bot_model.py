@@ -20,6 +20,9 @@ class ActionSpace:
     
 class BotModel(gym.Env):
     def __init__(self):
+        self.minShootDist = 5 #This is the MINIMUM Distance from away the target
+        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
+        a=self.reward_point()
         self.w=1
         #width of robot
         self.t=0.5
@@ -40,8 +43,6 @@ class BotModel(gym.Env):
         #right wheel speed
         self.is_over=False
         #the game is not over yet.
-        self.minShootDist = 5 #This is the MINIMUM Distance from away the target
-        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.reward = 0#the points rewarded to the robot during the simulation
 
 
@@ -76,17 +77,17 @@ class BotModel(gym.Env):
             if self.l_speed == self.r_speed:
               distance = self.l_speed * self.t
               #calculate the distance traveled.
-              self.x = self.x + (distance * np.sin(self.facing))
-              self.y = self.y + (distance * np.cos(self.facing))
+              self.x = self.x + (distance * np.sin(self.facing*np.pi/12))
+              self.y = self.y + (distance * np.cos(self.facing*np.pi/12))
               #update my x and y positions, now that I know how far I've traveled.
 
             else:
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                 #this is the physical radius of the robot.
                 z = (self.l_speed-self.r_speed)*self.t/self.w
-                self.x = self.x+(radius*np.sin(self.facing))-(radius*np.sin(self.facing-z))
-                self.y = self.y-(radius*np.cos(self.facing))+(radius*np.cos(self.facing-z))
-                self.facing -= z
+                self.x = self.x+(radius*np.sin(self.facing*np.pi/12))-(radius*np.sin((self.facing*np.pi/12)-z))
+                self.y = self.y-(radius*np.cos(self.facing*np.pi/12))+(radius*np.cos((self.facing*np.pi/12)-z))
+                self.facing -= z*12/np.pi
                 #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
                 while z<0:
                     z+=2*np.pi
@@ -95,13 +96,13 @@ class BotModel(gym.Env):
                     z-=2*np.pi
 
                 while self.facing<0:
-                    self.facing+=2*np.pi
+                    self.facing+=24
 
-                while self.facing>2*np.pi:
-                    self.facing-=2*np.pi
+                while self.facing>24:
+                    self.facing-=24
                 #making sure that the z-angle measurement doesn't go below 0 or above 2pi
                 
-        ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing*12/np.pi), l_speed=self.l_speed, r_speed=self.r_speed)
+        ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
         #when it's training, it takes the data from the environment and says "I have this to use now."
         episode_over = self.is_over
         #checks to see if it's over.
@@ -120,7 +121,7 @@ class BotModel(gym.Env):
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
-        self.facing = 2*np.pi * np.random.random_sample()
+        self.facing = 24 * np.random.random_sample()
         #set facing to a random position
         self.l_speed = 0
         #stop the left wheel
@@ -132,15 +133,14 @@ class BotModel(gym.Env):
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
       
     def checkreward(self):
-        if self.l_speed == 0 and self.r_speed == 0 and ((58 - self.x) ** 2 + (159 - self.y) ** 2 >= self.minShootDist ** 2 and (58 - self.x) ** 2 + (159 - self.y) ** 2 <= self.maxShootDist ** 2 and self.y <= self.x + 101 and self.y <= -self.x + 217):
+        if self.l_speed == 0 and self.r_speed == 0 and (self.x, self.y, self.facing in self.a):
         #If I'm in position in front of the goal and facing the right way,
-            if np.round(self.facing,1) <= np.round(np.tan((1598-self.y)/(638-self.x)),3):
-            #If I'm in position in front of the goal and facing the right way (but with extra parameters)
-                self.is_over = True
-                #end the game!
-                print(20*'>' + 'Reached')
-                self.reward += 500
-                #i get a lot of points
+        #If I'm in position in front of the goal and facing the right way (but with extra parameters)
+            self.is_over = True
+            #end the game!
+            print(20*'>' + 'Reached')
+            self.reward += 500
+            #i get a lot of points
         x = self.x
         y = self.y
         t = 0
