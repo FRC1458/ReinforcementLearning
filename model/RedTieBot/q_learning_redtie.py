@@ -76,8 +76,8 @@ class Model:
 
     def sample_action(self,s,eps):
         self.counter += 1
-       # if self.counter < 2000:
-       #     return self.calculated_path(s)
+        #if self.counter < 2000:
+            #return self.calculated_path(s)
         if np.random.random() < eps:
             #print('random')
             return self.env.action_space.sample()
@@ -85,23 +85,23 @@ class Model:
             p=self.predict(s)
             #print('prob: {}'.format(p))
             return self.env.action_space.fromQ(np.argmax(p))
-
- #   def calculated_path(self, observation):
-  #      x, y, facing = get_target()
-   #     if self.checkspot(x,y):
-    #        self.turn(angle=facing):
+'''
+    def calculated_path(self, observation):
+        x, y, facing = get_target()
+        if self.checkspot(x,y):
+            self.turn(angle=facing):
             
-     #def checkspot(self,x,y):
-        #a=self.env.reward_point()
-        #for n in range(len(a)):
-       #     if x in a[n][0] and y in a[n][1]:
-      #          return True
-     #   return False
+    def checkspot(self,x,y):
+        a=self.env.reward_point()
+        for n in range(len(a)):
+            if x in a[n][0] and y in a[n][1]:
+                return True
+        return False
 
-    #def turn(self, x=None, y=None, angle=None):
-        #if angle != None:
+    def turn(self, x=None, y=None, angle=None):
+        if angle != None:
             
-
+'''
 def play_one(model,eps,gamma):
     observation=env.reset()
     model.reset()
@@ -109,7 +109,7 @@ def play_one(model,eps,gamma):
     totalreward=0
     iters=0
     path = []
-    while not done and iters<1000:
+    while not done and iters<100000:
         action=model.sample_action(observation, eps)
         prev_observation=observation
         observation, reward, done, info = env.step(action)
@@ -156,9 +156,9 @@ if __name__ == '__main__':
             print("episode:",n," total reward:",totalreward," eps:",eps)
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
     print("total rewards:", totalrewards.sum())
-    plt.plot(totalrewards)
-    plt.title("Rewards")
-    plt.show()
+    #plt.plot(totalrewards)
+    #plt.title("Rewards")
+    #plt.show()
     plot_running_avg(totalrewards)
     print(totalrewards)
     s = input("save file? ")
