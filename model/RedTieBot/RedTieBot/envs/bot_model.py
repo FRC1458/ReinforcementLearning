@@ -122,6 +122,7 @@ class BotModel(gym.Env):
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
+        self.clear()
         self.facing = 24 * np.random.random_sample()
         #set facing to a random position
         self.l_speed = 0
@@ -268,5 +269,7 @@ class BotModel(gym.Env):
         return a
             
     def close(self):
-        pg.quit()
-        return
+        self.trt.bye()
+
+    def clear(self):
+        self.trt.clear()
