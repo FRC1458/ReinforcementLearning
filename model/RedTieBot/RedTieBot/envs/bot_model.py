@@ -51,7 +51,6 @@ class BotModel(gym.Env):
         #The box is technically a 1x1x1 cube.
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
-
         self.path = []
 
     def step(self, action):
@@ -114,14 +113,14 @@ class BotModel(gym.Env):
     def reset(self):
         T = True
         while T:
-            self.x0 = np.random.randint(82)
-            self.y0 = np.random.randint(160)
+            self.x0 = 82 * np.random.random_sample()
+            self.y0 = 159.8 * np.random.random_sample()
             if not self.invalid_point(self.x0,self.y0):
                 T = False
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
-        self.facing = np.random.randint(24)
+        self.facing = 24 * np.random.random_sample()
         #set facing to a random position
         self.l_speed = 0
         #stop the left wheel
@@ -140,7 +139,7 @@ class BotModel(gym.Env):
             self.is_over = True
             #end the game!
             #print(20*'>' + 'Reached')
-            self.reward += 500
+            self.reward += 100
             #i get a lot of points
         x = self.x
         y = self.y
