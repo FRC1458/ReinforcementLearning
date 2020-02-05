@@ -8,6 +8,7 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+import turtle
 import RedTieBot
 
 def build_state(features):
@@ -135,8 +136,8 @@ def plot_running_avg(totalrewards):
     plt.title('Rewards')
     plt.show()
     print(totalrewards)
-    s = input("save file? ")
-    if s in ['y', 'Y', 'yes', 'ok', 'oui']:
+    nameeverything = raw_input("save file? ")
+    if nameeverything == "yes":
         model.save()
 
 if __name__ == '__main__':
@@ -150,10 +151,12 @@ if __name__ == '__main__':
         monitor_dir = './' + filename + '_' + str(datetime.now())
         env = wrappers.Monitor(env, monitor_dir)
 
-    N=50000
+    N=10000
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
-    for n in range(N):
+    print(10000)
+    for n in range(10000):
+        print(n)
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward

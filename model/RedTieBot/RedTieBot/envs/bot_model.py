@@ -2,7 +2,7 @@
 import numpy as np
 import gym.spaces.box as b
 import gym
-#import turtle as tu
+import turtle
 #we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
 #a=tu.Turtle()
 #a.speed(0)
@@ -224,12 +224,12 @@ class BotModel(gym.Env):
         return False
 
     def render(self, mode='human'):
-        pg.init()
-        screen = pg.display.set_mode([1000, 1000])
-        #initialize the whole thing and create a window.
-
-        screen.fill((255, 255, 255))
-        #fill the background with white
+        trt = turtle.Turtle()
+        trt.speed(0)
+        trt.width(1)
+        trt.pendown()
+        trt.goto(x, y)
+        trt.done()
 
 
     def generate_point(self):
