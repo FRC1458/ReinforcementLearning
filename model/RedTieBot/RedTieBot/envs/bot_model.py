@@ -115,14 +115,14 @@ class BotModel(gym.Env):
     def reset(self):
         T = True
         while T:
-            self.x0 = 82 * np.random.random_sample()
-            self.y0 = 159.8 * np.random.random_sample()
+            self.x0 = np.random.randint(82)
+            self.y0 = np.random.randint(160)
             if not self.invalid_point(self.x0,self.y0):
                 T = False
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
-        self.facing = 24 * np.random.random_sample()
+        self.facing = np.random.randint(24)
         #set facing to a random position
         self.l_speed = 0
         #stop the left wheel
@@ -138,7 +138,7 @@ class BotModel(gym.Env):
       
     def checkreward(self):
 
-        if self.l_speed == 0 and self.r_speed == 0 and (int(self.x), int(self.y), int(self.facing) in self.a):
+        if self.l_speed == 0 and self.r_speed == 0 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
         #If I'm in position in front of the goal and facing the right way (but with extra parameters)
             self.is_over = True
