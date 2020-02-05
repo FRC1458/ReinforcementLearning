@@ -110,7 +110,7 @@ def play_one(model,eps,gamma):
     totalreward=0
     iters=0
     path = []
-    while not done and iters<100000:
+    while not done and iters<10000:
         action=model.sample_action(observation, eps)
         prev_observation=observation
         observation, reward, done, info = env.step(action)
@@ -136,8 +136,8 @@ def plot_running_avg(totalrewards):
     plt.title('Rewards')
     plt.show()
     print(totalrewards)
-    nameeverything = raw_input("save file? ")
-    if nameeverything == "yes":
+    nameeverything = input("save file? ")
+    if nameeverything == "yes" or "y":
         model.save()
 
 if __name__ == '__main__':
@@ -165,4 +165,4 @@ if __name__ == '__main__':
     #plt.title("Rewards")
     #plt.show()
     plot_running_avg(totalrewards)
-    print('Total rewards are ' + str(totalreward) + '!')
+    print('Total rewards are' + str(totalreward) + '!')
