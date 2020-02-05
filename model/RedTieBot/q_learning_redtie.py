@@ -88,8 +88,12 @@ class Model:
             return self.env.action_space.fromQ(np.argmax(p))
 '''
     def calculated_path(self, observation):
+        a=self.env.reward_point()
         x, y, facing = get_target()
         if self.checkspot(x,y):
+            for n in range(len(a)):
+                if x in a[n][0] and y in a[n][1]:
+                    facing = a[n][2]
             self.turn(angle=facing):
             
     def checkspot(self,x,y):
