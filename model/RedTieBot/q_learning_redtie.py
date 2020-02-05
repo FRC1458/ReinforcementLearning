@@ -69,7 +69,7 @@ class Model:
             
     def predict(self, s):
         x=self.feature_transformer.transform(s)
-        return self.Q[int(x)]
+        return self.Q[x]
 
     def update(self,s,a,G):
         x=self.feature_transformer.transform(s)
@@ -123,8 +123,8 @@ def play_one(model,eps,gamma):
         model.update(prev_observation, action, G)
         iters+=1
 
-    if totalreward > 0:
-        print(path)
+    #if totalreward > 0:
+        #print(path)
     return totalreward
 
 def plot_running_avg(totalrewards):
