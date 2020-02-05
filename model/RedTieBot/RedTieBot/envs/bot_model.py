@@ -52,6 +52,7 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
         self.path = []
+        self.trt = turtle.Turtle()
 
     def step(self, action):
         try:
@@ -71,6 +72,7 @@ class BotModel(gym.Env):
         elif self.r_speed < -128:
             self.r_speed = -128
         #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
+        #self.render()
         self.checkreward()
         if not self.is_over:
             if self.l_speed == self.r_speed:
@@ -127,6 +129,9 @@ class BotModel(gym.Env):
         self.r_speed = 0
         self.reward = 0
         self.is_over = False
+        '''self.trt.clear()
+        self.trt.penup()
+        self.trt.goto(self.x0, self.y0)'''
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
@@ -226,13 +231,10 @@ class BotModel(gym.Env):
         return False
 
     def render(self, mode='human'):
-        trt = turtle.Turtle()
-        trt.speed(0)
-        trt.width(1)
-        trt.pendown()
-        trt.goto(x, y)
-        trt.done()
-
+        self.trt.speed(0)
+        self.trt.width(1)
+        self.trt.pendown()
+        self.trt.goto(self.x*2, self.y*2)
 
     def generate_point(self):
         if self.counter >1000:
