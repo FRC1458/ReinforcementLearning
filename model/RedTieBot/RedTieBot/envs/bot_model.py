@@ -78,8 +78,8 @@ class BotModel(gym.Env):
             if self.l_speed == self.r_speed:
               distance = self.l_speed * self.t
               #calculate the distance traveled.
-              self.x = self.x + (distance * np.sin(self.facing*np.pi/12))
-              self.y = self.y + (distance * np.cos(self.facing*np.pi/12))
+              self.x = self.x + (distance * np.cos(self.facing*np.pi/12))
+              self.y = self.y + (distance * np.sin(self.facing*np.pi/12))
               #update my x and y positions, now that I know how far I've traveled.
 
             else:
