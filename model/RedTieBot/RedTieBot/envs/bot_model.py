@@ -2,7 +2,7 @@
 import numpy as np
 import gym.spaces.box as b
 import gym
-import turtle
+#import turtle
 #we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
 #a=tu.Turtle()
 #a.speed(0)
@@ -52,7 +52,7 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
         self.path = []
-        self.trt = turtle.Turtle()
+        #self.trt = turtle.Turtle()
 
     def step(self, action):
         try:
@@ -86,8 +86,8 @@ class BotModel(gym.Env):
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                 #this is the physical radius of the robot.
                 z = (self.l_speed-self.r_speed)*self.t/self.w
-                self.x = self.x+(radius*np.sin(self.facing*np.pi/12))-(radius*np.sin((self.facing*np.pi/12)-z))
-                self.y = self.y-(radius*np.cos(self.facing*np.pi/12))+(radius*np.cos((self.facing*np.pi/12)-z))
+                self.x = self.x+(radius*np.cos(self.facing*np.pi/12))-(radius*np.sin((self.facing*np.pi/12)-z))
+                self.y = self.y-(radius*np.sin(self.facing*np.pi/12))+(radius*np.cos((self.facing*np.pi/12)-z))
                 self.facing -= z*12/np.pi
                 #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
                 while z<0:
@@ -151,15 +151,15 @@ class BotModel(gym.Env):
             if self.l_speed == self.r_speed:
                 distance = self.l_speed * t
                 #calculate the distance traveled.
-                x = x + (distance*np.sin(facing))
-                y = y + (distance*np.cos(facing))
+                x = x + (distance*np.cos(facing))
+                y = y + (distance*np.sin(facing))
             #update my x and y positions, now that I know how far I’ve traveled.
             else:
                 radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
                   #this the radius the robot travels.
                 z2 = (self.l_speed-self.r_speed)*t/self.w
-                x =  x+(radius*np.sin(facing))-(radius*np.sin(facing-z2))
-                y =  y-(radius*np.cos(facing))+(radius*np.cos(facing-z2))
+                x =  x+(radius*np.cos(facing))-(radius*np.sin(facing-z2))
+                y =  y-(radius*np.sin(facing))+(radius*np.cos(facing-z2))
                 facing -= z2
                 #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
                 while z2<0:
@@ -225,10 +225,13 @@ class BotModel(gym.Env):
         return False
 
     def render(self, mode='human'):
+        '''
         self.trt.speed(0)
         self.trt.width(1)
         self.trt.pendown()
         self.trt.goto(self.x*2, self.y*2)
+        '''
+        pass
 
     def generate_point(self):
         if self.counter >1000:
@@ -262,7 +265,9 @@ class BotModel(gym.Env):
         return a
             
     def close(self):
-        self.trt.bye()
+        #self.trt.bye()
+        pass
 
     def clear(self):
-        self.trt.clear()
+        #self.trt.clear()
+        pass
