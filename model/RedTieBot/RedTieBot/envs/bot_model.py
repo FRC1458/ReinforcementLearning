@@ -113,12 +113,7 @@ class BotModel(gym.Env):
         #spit back all that data.
         
     def reset(self):
-        T = True
-        while T:
-            self.x0 = np.random.randint(82)
-            self.y0 = np.random.randint(160)
-            if not self.invalid_point(self.x0,self.y0):
-                T = False
+        self.x0, self.y0, self.facing = self.generate_point()
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
@@ -238,7 +233,7 @@ class BotModel(gym.Env):
         self.trt.goto(self.x*2, self.y*2)
 
     def generate_point(self):
-        if self.counter >1000:
+        if self.counter >5000:
             T = True
             facing = np.random.randint(24)
             while T:

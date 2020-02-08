@@ -169,4 +169,4 @@ if __name__ == '__main__':
     #plt.title("Rewards")
     #plt.show()
     plot_running_avg(totalrewards)
-    print('Total rewards are' + str(totalreward) + '!')
+    print('Total rewards are ' + str(totalreward) + '!')
