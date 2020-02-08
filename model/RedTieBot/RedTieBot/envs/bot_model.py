@@ -117,10 +117,8 @@ class BotModel(gym.Env):
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
-        self.clear()
-        self.facing = 24 * np.random.random_sample()
-        self.facing = np.random.randint(24)
         #set facing to a random position
+        self.clear()
         self.l_speed = 0
         #stop the left wheel
         self.r_speed = 0
@@ -233,7 +231,7 @@ class BotModel(gym.Env):
         self.trt.goto(self.x*2, self.y*2)
 
     def generate_point(self):
-        if self.counter >5000:
+        if self.counter >1000:
             T = True
             facing = np.random.randint(24)
             while T:

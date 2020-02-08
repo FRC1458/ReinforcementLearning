@@ -141,7 +141,7 @@ def plot_running_avg(totalrewards):
     plt.show()
     print(totalrewards)
     nameeverything = input("save file? ")
-    if nameeverything == "yes" or "y":
+    if nameeverything in ["yes", "y"]:
         model.save()
 
 if __name__ == '__main__':
