@@ -23,7 +23,7 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a=self.reward_point()
-        self.w=1
+        self.w=50
         #width of robot
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
