@@ -54,9 +54,9 @@ class BotModel(gym.Env):
         self.path = []
         self.trt = turtle.Turtle()
         self.trt.goto(0,0)
-        self.trt.goto(0, 2*159.8)
-        self.trt.goto(2*82.1, 2*159.8)
-        self.trt.goto(2*82.1, 0)
+        self.trt.goto(0,159.8)
+        self.trt.goto(82.1, 159.8)
+        self.trt.goto(82.1, 0)
         self.trt.goto(0,0)
 
     def step(self, action):
@@ -231,7 +231,7 @@ class BotModel(gym.Env):
         self.trt.speed(0)
         self.trt.width(1)
         self.trt.pendown()
-        self.trt.goto(self.x*2, self.y*2)
+        self.trt.goto(self.x, self.y)
         pass
 
     def generate_point(self):
@@ -239,8 +239,8 @@ class BotModel(gym.Env):
             T = True
             facing = np.random.randint(24)
             while T:
-                x = np.random.randint(2*82)
-                y = np.random.randint(2*159)
+                x = np.random.randint(82)
+                y = np.random.randint(159)
                 if not self.invalid_point(x,y):
                     return x,y,facing
         else:
@@ -270,5 +270,11 @@ class BotModel(gym.Env):
         pass
 
     def clear(self):
-        #self.trt.clear()
-        pass
+        self.trt.clear()
+        self.trt.penup()
+        self.trt.goto(0,0)
+        self.trt.pendown()
+        self.trt.goto(0,159.8)
+        self.trt.goto(82.1, 159.8)
+        self.trt.goto(82.1, 0)
+        self.trt.goto(0,0)
