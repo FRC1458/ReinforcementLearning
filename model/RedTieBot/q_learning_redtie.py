@@ -28,6 +28,7 @@ class FeatureTransformer:
         '''
     def transform(self, observation):
         x, y, facing, l_speed, r_speed = observation.values()
+        #print("transform: ", str(x), str(y), str(facing))
         '''
         return build_state([
             to_bin(x, self.bot_xposition_bins),
@@ -37,7 +38,7 @@ class FeatureTransformer:
             to_bin(r_speed, self.bot_rspeed_bins),
         ])
         '''
-        return x*24*160+y*24+facing
+        return int(x*24*160+y*24+facing)
 class Model:
     def __init__(self, env, feature_transformer):
         self.env = env
@@ -73,6 +74,7 @@ class Model:
 
     def update(self,s,a,G):
         x=self.feature_transformer.transform(s)
+        #print("update: ", str(x), str(a))
         self.Q[x,a] += 10e-3*(G-self.Q[x,a])
 
     def sample_action(self,s,eps):
@@ -155,10 +157,10 @@ if __name__ == '__main__':
         monitor_dir = './' + filename + '_' + str(datetime.now())
         env = wrappers.Monitor(env, monitor_dir)
 
-    N=10000
+    N=5000
     totalrewards=np.empty(N)
-    import pdb; pdb.set_trace()
-    for n in range(10000):
+    #import pdb; pdb.set_trace()
+    for n in range(N):
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
