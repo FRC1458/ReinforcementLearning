@@ -274,7 +274,7 @@ class BotModel(gym.Env):
         s = 2
         #reset and set turtle scale
 
-        self.trt.goto(0*s,0*s)
+        self.trt.goto(0*s,6.26*s)
         self.trt.pendown()
         self.trt.goto(0*s, 153.55*s)
         self.trt.goto(17.33*s, 159.85*s)
@@ -282,7 +282,8 @@ class BotModel(gym.Env):
         self.trt.goto(82.18*s, 153.52*s)
         self.trt.goto(82.18*s, 6.28*s)
         self.trt.goto(64.91*s, 0)
-        self.trt.goto(0,0)
+        self.trt.goto(17.19*s, 0)
+        self.trt.goto(0*s, 6.26*s)
         #draw the field square with corners
 
         self.trt.penup()
