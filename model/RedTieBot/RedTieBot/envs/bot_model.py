@@ -222,6 +222,7 @@ class BotModel(gym.Env):
            if (y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68):
              return True
              #robot ran into the bottom right pillar of the rendezvous point
+
         return False
 
     def render(self, mode='human'):

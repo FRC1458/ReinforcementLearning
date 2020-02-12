@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
     N=5000
     totalrewards=np.empty(N)
-    #import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
