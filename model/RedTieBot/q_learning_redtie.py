@@ -167,7 +167,8 @@ if __name__ == '__main__':
         if n%100==0:
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
             print("total rewards:", totalrewards.sum())
-            env.clear()
+            if n%500==0:
+                env.clearAndDraw()
     #plt.plot(totalrewards)
     #plt.title("Rewards")
     #plt.show()

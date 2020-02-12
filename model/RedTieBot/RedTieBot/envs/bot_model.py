@@ -36,7 +36,7 @@ class BotModel(gym.Env):
         self.y=self.y0
         #robot's current y-position.
         self.facing=0
-        #the direction that the robot is facing in radians, in standard position
+        #the direction that the robot is facing, in standard position
         self.l_speed=0
         #left wheel speed
         self.r_speed=0
@@ -53,11 +53,8 @@ class BotModel(gym.Env):
         #The range of speeds that the wheel can have.
         self.path = []
         self.trt = turtle.Turtle()
-        self.trt.goto(0,0)
-        self.trt.goto(0,159.8)
-        self.trt.goto(82.1, 159.8)
-        self.trt.goto(82.1, 0)
-        self.trt.goto(0,0)
+        #the scale of the turtle.
+        self.s = 2
 
     def step(self, action):
         try:
@@ -129,7 +126,7 @@ class BotModel(gym.Env):
         self.reward = 0
         self.is_over = False
         self.trt.penup()
-        self.trt.goto(self.x0, self.y0)
+        self.trt.goto(self.x0*self.s, self.y0*self.s)
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
@@ -231,7 +228,7 @@ class BotModel(gym.Env):
         self.trt.speed(0)
         self.trt.width(1)
         self.trt.pendown()
-        self.trt.goto(self.x, self.y)
+        self.trt.goto(self.x*self.s, self.y*self.s)
         pass
 
     def generate_point(self):
@@ -269,12 +266,88 @@ class BotModel(gym.Env):
         #self.trt.bye()
         pass
 
-    def clear(self):
+    def clearAndDraw(self):
         self.trt.clear()
         self.trt.penup()
-        self.trt.goto(0,0)
+        self.trt.pencolor('red')
+        self.trt.fillcolor('red')
+        s = 2
+        #reset and set turtle scale
+
+        self.trt.goto(0*s,0*s)
         self.trt.pendown()
-        self.trt.goto(0,159.8)
-        self.trt.goto(82.1, 159.8)
-        self.trt.goto(82.1, 0)
+        self.trt.goto(0*s, 153.55*s)
+        self.trt.goto(17.33*s, 159.85*s)
+        self.trt.goto(64.77*s, 159.85*s)
+        self.trt.goto(82.18*s, 153.52*s)
+        self.trt.goto(82.18*s, 6.28*s)
+        self.trt.goto(64.91*s, 0)
         self.trt.goto(0,0)
+        #draw the field square with corners
+
+        self.trt.penup()
+        self.trt.goto(50.44*s, 107.36*s)
+        self.trt.pendown()
+        self.trt.begin_fill()
+        self.trt.goto(50.87*s, 106.4*s)
+        self.trt.goto(49.91*s, 105.98*s)
+        self.trt.goto(49.48*s, 106.94*s)
+        self.trt.end_fill()
+        #draw the north pillar
+
+        self.trt.penup()
+        self.trt.goto(67.57*s, 69.45*s)
+        self.trt.pendown()
+        self.trt.begin_fill()
+        self.trt.goto(68*s, 68.49*s)
+        self.trt.goto(67.04*s, 68.07*s)
+        self.trt.goto(66.61*s, 69.03*s)
+        self.trt.goto(67.57*s, 69.45*s)
+        self.trt.end_fill()
+        #draw the east pillar
+
+        self.trt.penup()
+        self.trt.goto(32.18*s, 53.82*s)
+        self.trt.pendown()
+        self.trt.begin_fill()
+        self.trt.goto(32.60*s, 52.88*s)
+        self.trt.goto(31.67*s, 52.47*s)
+        self.trt.goto(31.24*s, 53.40*s)
+        self.trt.goto(32.18*s, 53.82*s)
+        self.trt.end_fill()
+        #draw the south pillar
+
+        self.trt.penup()
+        self.trt.goto(15.06*s, 91.76*s)
+        self.trt.pendown()
+        self.trt.begin_fill()
+        self.trt.goto(15.48*s, 90.8*s)
+        self.trt.goto(14.53*s, 90.38*s)
+        self.trt.goto(14.1*s, 91.34*s)
+        self.trt.goto(15.06*s, 91.76*s)
+        self.trt.end_fill()
+        #drw the west pillar
+
+        self.trt.penup()
+        self.trt.goto(14.1*s, 95.15*s)
+        self.trt.pendown()
+        self.trt.begin_fill()
+        self.trt.goto(14.1*s, 87.53*s)
+        self.trt.goto(0, 87.53*s)
+        self.trt.goto(0, 95.15*s)
+        self.trt.goto(14.1*s, 95.15*s)
+        self.trt.end_fill()
+        #draw the west spinner
+
+        self.trt.penup()
+        self.trt.goto(82.1*s, 72.3*s)
+        self.trt.pendown()
+        self.trt.begin_fill()
+        self.trt.goto(82.1*s, 64.68*s)
+        self.trt.goto(68*s, 64.68*s)
+        self.trt.goto(68*s, 72.3*s)
+        self.trt.goto(82.1*s, 72.3*s)
+        self.trt.end_fill()
+        #draw the east spinner
+
+        self.trt.pencolor('black')
