@@ -73,7 +73,7 @@ class BotModel(gym.Env):
             self.r_speed = 127
         elif self.r_speed < -128:
             self.r_speed = -128
-        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward
+        #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
         self.render()
         self.checkreward()
         if not self.is_over:
@@ -228,6 +228,7 @@ class BotModel(gym.Env):
         self.trt.speed(0)
         self.trt.width(1)
         self.trt.pendown()
+        self.trt.setheading(self.facing*15)
         self.trt.goto(self.x*self.s, self.y*self.s)
         pass
 
