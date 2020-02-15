@@ -83,7 +83,6 @@ class BotModel(gym.Env):
               #calculate the distance traveled.
               self.x = self.x + (distance * np.cos(self.facing*np.pi/12))
               self.y = self.y + (distance * np.sin(self.facing*np.pi/12))
-              print('update: ' + str(self.x), str(self.y))
               #update my x and y positions, now that I know how far I've traveled.
 
             else:
@@ -195,10 +194,18 @@ class BotModel(gym.Env):
             
     def invalid_point(self, x, y):
         s = self.s
-        '''if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
+        if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
             print("ran into the triangle corners")
-            print(x, y)
-            print()
+            print('CRASH: ' + str(x), str(y))
+            if self.graphics == True:
+                self.trt.penup()
+                self.trt.goto(x,y)
+                self.trt.width(5)
+                self.trt.pendown()
+                self.trt.forward(1)
+                self.trt.width(1)
+                self.trt.penup()
+                print()
             return True
             #robot ran into the triangles in the corners and loses points
 
@@ -214,8 +221,16 @@ class BotModel(gym.Env):
             
         if x > 82.1*s or y > 159.8*s or x < 0 or y<0:
             print('outside the barrier')
-            print(x, y)
-            print()
+            print('CRASH: ' + str(x), str(y))
+            if self.graphics == True:
+                self.trt.penup()
+                self.trt.goto(x,y)
+                self.trt.width(5)
+                self.trt.pendown()
+                self.trt.forward(1)
+                self.trt.width(1)
+                self.trt.penup()
+                print()
             return True 
             #robot went outside the barrier
 
@@ -241,36 +256,7 @@ class BotModel(gym.Env):
            if (y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68):
              print('ran into the east pillar')
              return True
-             #robot ran into the bottom right pillar of the rendezvous point'''
-
-        if y <= 0 or x <= 0 or y >= 159.8 or x >= 82.1:
-            print('robot outside of the rectangle barrier')
-            print('CRASH: ' + str(x), str(y))
-            if self.graphics == True:
-                self.trt.penup()
-                self.trt.goto(x,y)
-                self.trt.width(5)
-                self.trt.pendown()
-                self.trt.forward(1)
-                self.trt.width(1)
-                self.trt.penup()
-                print()
-            return True
-
-        if (y >= 0.364*x + 153.55) or (y >= -0.364*x + 183.43) or (y <= 0.364*x - 23.63) or (y<= -0.364*x + 6.23):
-            print('robot hit the triangle corners')
-            return True
-
-        if (y <= 72.3) and (x <= 82.1) and (y >= 64.68) and (x >= 68):
-            print('robot hit the east spinner')
-            return True
-
-        if (y <= 95.15) and (x < 14.1) and (y > 87.53) and (x > 0):
-            print('robot hit the west spinner')
-            return True
-
-
-
+             #robot ran into the bottom right pillar of the rendezvous point
         return False
 
     def render(self, mode='human'):
