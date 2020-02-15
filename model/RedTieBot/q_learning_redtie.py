@@ -88,6 +88,10 @@ class Model:
             p=self.predict(s)
             #print('prob: {}'.format(p))
             return self.env.action_space.fromQ(np.argmax(p))
+    def setGraphics(self):
+        env.graphics = True
+    def stopGraphics(self):
+        env.graphics = False
 '''
     def calculated_path(self, observation):
         a=self.env.reward_point()
@@ -167,6 +171,11 @@ if __name__ == '__main__':
         if n%100==0:
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
             print("total rewards:", totalrewards.sum())
+            x = input("show graphics? (y/n)")
+            if x == 'y':
+                model.setGraphics()
+            if x == 'n':
+                model.stopGraphics()
             if n%500==0:
                 env.clearAndDraw()
     #plt.plot(totalrewards)

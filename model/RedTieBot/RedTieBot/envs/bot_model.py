@@ -20,6 +20,7 @@ class ActionSpace:
     
 class BotModel(gym.Env):
     def __init__(self):
+        self.graphics = False
         self.s = 1
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
@@ -134,6 +135,10 @@ class BotModel(gym.Env):
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
       
     def checkreward(self):
+        d0 = np.sqrt((58-self.x0)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y0)**2)
+        d = np.sqrt((58-self.x)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y)**2)
+        if self.is_over:
+            self.reward += ((1/d)*100)-((1/d0)*100)
         s = self.s
         if self.l_speed == 0 and self.r_speed == 0 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
@@ -241,14 +246,15 @@ class BotModel(gym.Env):
         if y <= 0 or x <= 0 or y >= 159.8 or x >= 82.1:
             print('robot outside of the rectangle barrier')
             print('CRASH: ' + str(x), str(y))
-            self.trt.penup()
-            self.trt.goto(x,y)
-            self.trt.width(5)
-            self.trt.pendown()
-            self.trt.forward(1)
-            self.trt.width(1)
-            self.trt.penup()
-            print()
+            if self.graphics == True:
+                self.trt.penup()
+                self.trt.goto(x,y)
+                self.trt.width(5)
+                self.trt.pendown()
+                self.trt.forward(1)
+                self.trt.width(1)
+                self.trt.penup()
+                print()
             return True
 
         if (y >= 0.364*x + 153.55) or (y >= -0.364*x + 183.43) or (y <= 0.364*x - 23.63) or (y<= -0.364*x + 6.23):
@@ -269,11 +275,12 @@ class BotModel(gym.Env):
 
     def render(self, mode='human'):
         s = self.s
-        self.trt.speed(0)
-        self.trt.width(1)
-        self.trt.pendown()
-        self.trt.setheading(self.facing*15)
-        self.trt.goto(self.x, self.y)
+        if self.graphics == True:
+            self.trt.speed(0)
+            self.trt.width(1)
+            self.trt.pendown()
+            self.trt.setheading(self.facing*15)
+            self.trt.goto(self.x, self.y)
 
     def generate_point(self):
         s = self.s
@@ -315,87 +322,88 @@ class BotModel(gym.Env):
 
     def clearAndDraw(self):
         s = self.s
-        self.trt.clear()
-        self.trt.penup()
-        self.trt.pencolor('red')
-        self.trt.fillcolor('red')
-        #reset and set turtle scale
+        if self.graphics == True:
+            self.trt.clear()
+            self.trt.penup()
+            self.trt.pencolor('red')
+            self.trt.fillcolor('red')
+            #reset and set turtle scale
 
-        self.trt.goto(0*s,6.26*s)
-        self.trt.pendown()
-        self.trt.goto(0*s, 153.55*s)
-        self.trt.goto(17.33*s, 159.85*s)
-        self.trt.goto(64.77*s, 159.85*s)
-        self.trt.goto(82.18*s, 153.52*s)
-        self.trt.goto(82.18*s, 6.28*s)
-        self.trt.goto(64.91*s, 0)
-        self.trt.goto(17.19*s, 0)
-        self.trt.goto(0*s, 6.26*s)
-        #draw the field square with corners
+            self.trt.goto(0*s,6.26*s)
+            self.trt.pendown()
+            self.trt.goto(0*s, 153.55*s)
+            self.trt.goto(17.33*s, 159.85*s)
+            self.trt.goto(64.77*s, 159.85*s)
+            self.trt.goto(82.18*s, 153.52*s)
+            self.trt.goto(82.18*s, 6.28*s)
+            self.trt.goto(64.91*s, 0)
+            self.trt.goto(17.19*s, 0)
+            self.trt.goto(0*s, 6.26*s)
+            #draw the field square with corners
 
-        self.trt.penup()
-        self.trt.goto(50.44*s, 107.36*s)
-        self.trt.pendown()
-        self.trt.begin_fill()
-        self.trt.goto(50.87*s, 106.4*s)
-        self.trt.goto(49.91*s, 105.98*s)
-        self.trt.goto(49.48*s, 106.94*s)
-        self.trt.end_fill()
-        #draw the north pillar
+            self.trt.penup()
+            self.trt.goto(50.44*s, 107.36*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(50.87*s, 106.4*s)
+            self.trt.goto(49.91*s, 105.98*s)
+            self.trt.goto(49.48*s, 106.94*s)
+            self.trt.end_fill()
+            #draw the north pillar
 
-        self.trt.penup()
-        self.trt.goto(67.57*s, 69.45*s)
-        self.trt.pendown()
-        self.trt.begin_fill()
-        self.trt.goto(68*s, 68.49*s)
-        self.trt.goto(67.04*s, 68.07*s)
-        self.trt.goto(66.61*s, 69.03*s)
-        self.trt.goto(67.57*s, 69.45*s)
-        self.trt.end_fill()
-        #draw the east pillar
+            self.trt.penup()
+            self.trt.goto(67.57*s, 69.45*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(68*s, 68.49*s)
+            self.trt.goto(67.04*s, 68.07*s)
+            self.trt.goto(66.61*s, 69.03*s)
+            self.trt.goto(67.57*s, 69.45*s)
+            self.trt.end_fill()
+            #draw the east pillar
 
-        self.trt.penup()
-        self.trt.goto(32.18*s, 53.82*s)
-        self.trt.pendown()
-        self.trt.begin_fill()
-        self.trt.goto(32.60*s, 52.88*s)
-        self.trt.goto(31.67*s, 52.47*s)
-        self.trt.goto(31.24*s, 53.40*s)
-        self.trt.goto(32.18*s, 53.82*s)
-        self.trt.end_fill()
-        #draw the south pillar
+            self.trt.penup()
+            self.trt.goto(32.18*s, 53.82*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(32.60*s, 52.88*s)
+            self.trt.goto(31.67*s, 52.47*s)
+            self.trt.goto(31.24*s, 53.40*s)
+            self.trt.goto(32.18*s, 53.82*s)
+            self.trt.end_fill()
+            #draw the south pillar
 
-        self.trt.penup()
-        self.trt.goto(15.06*s, 91.76*s)
-        self.trt.pendown()
-        self.trt.begin_fill()
-        self.trt.goto(15.48*s, 90.8*s)
-        self.trt.goto(14.53*s, 90.38*s)
-        self.trt.goto(14.1*s, 91.34*s)
-        self.trt.goto(15.06*s, 91.76*s)
-        self.trt.end_fill()
-        #drw the west pillar
+            self.trt.penup()
+            self.trt.goto(15.06*s, 91.76*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(15.48*s, 90.8*s)
+            self.trt.goto(14.53*s, 90.38*s)
+            self.trt.goto(14.1*s, 91.34*s)
+            self.trt.goto(15.06*s, 91.76*s)
+            self.trt.end_fill()
+            #drw the west pillar
 
-        self.trt.penup()
-        self.trt.goto(14.1*s, 95.15*s)
-        self.trt.pendown()
-        self.trt.begin_fill()
-        self.trt.goto(14.1*s, 87.53*s)
-        self.trt.goto(0, 87.53*s)
-        self.trt.goto(0, 95.15*s)
-        self.trt.goto(14.1*s, 95.15*s)
-        self.trt.end_fill()
-        #draw the west spinner
+            self.trt.penup()
+            self.trt.goto(14.1*s, 95.15*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(14.1*s, 87.53*s)
+            self.trt.goto(0, 87.53*s)
+            self.trt.goto(0, 95.15*s)
+            self.trt.goto(14.1*s, 95.15*s)
+            self.trt.end_fill()
+            #draw the west spinner
 
-        self.trt.penup()
-        self.trt.goto(82.1*s, 72.3*s)
-        self.trt.pendown()
-        self.trt.begin_fill()
-        self.trt.goto(82.1*s, 64.68*s)
-        self.trt.goto(68*s, 64.68*s)
-        self.trt.goto(68*s, 72.3*s)
-        self.trt.goto(82.1*s, 72.3*s)
-        self.trt.end_fill()
-        #draw the east spinner
+            self.trt.penup()
+            self.trt.goto(82.1*s, 72.3*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(82.1*s, 64.68*s)
+            self.trt.goto(68*s, 64.68*s)
+            self.trt.goto(68*s, 72.3*s)
+            self.trt.goto(82.1*s, 72.3*s)
+            self.trt.end_fill()
+            #draw the east spinner
 
-        self.trt.pencolor('black')
+            self.trt.pencolor('black')
