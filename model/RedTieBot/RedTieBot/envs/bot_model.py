@@ -25,7 +25,7 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a=self.reward_point()
-        self.w=50
+        self.w=5
         #width of robot
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
@@ -88,34 +88,7 @@ class BotModel(gym.Env):
         self.render()
         self.checkreward()
         if not self.is_over:
-            if self.l_speed == self.r_speed:
-              distance = self.l_speed * self.t
-              #calculate the distance traveled.
-              self.x = self.x + (distance * np.cos(self.facing*np.pi/12))
-              self.y = self.y + (distance * np.sin(self.facing*np.pi/12))
-              #update my x and y positions, now that I know how far I've traveled.
-
-            else:
-                radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
-                #this is the physical radius of the robot.
-                z = (self.l_speed-self.r_speed)*self.t/self.w
-                self.x = self.x+(radius*np.cos(self.facing*np.pi/12))-(radius*np.sin((self.facing*np.pi/12)-z))
-                self.y = self.y-(radius*np.sin(self.facing*np.pi/12))+(radius*np.cos((self.facing*np.pi/12)-z))
-                self.facing -= z*12/np.pi
-                #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
-                while z<0:
-                    z+=2*np.pi
-
-                while z>2*np.pi:
-                    z-=2*np.pi
-
-                while self.facing<0:
-                    self.facing+=24
-
-                while self.facing>24:
-                    self.facing-=24
-                #making sure that the z-angle measurement doesn't go below 0 or above 2pi
-
+            self.x, self.y, self.facing = self.moving(self.x,self.y,self.facing,self.t)
         ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
         #when it's training, it takes the data from the environment and says "I have this to use now."
         episode_over = self.is_over
@@ -149,7 +122,7 @@ class BotModel(gym.Env):
         if self.is_over:
             self.reward += ((1/d)*100)-((1/d0)*100)
         s = self.s
-        if self.l_speed == 0 and self.r_speed == 0 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
+        if abs(self.l_speed) <= 0.01 and abs(self.r_speed) <= 0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
         #If I'm in position in front of the goal and facing the right way (but with extra parameters)
             self.is_over = True
@@ -160,33 +133,11 @@ class BotModel(gym.Env):
         x = self.x*s
         y = self.y*s
         t = 0
-        facing = self.facing*np.pi/12
+        facing = self.facing
         N = 10
         for check in range(N):
             t+=self.t/N
-            if self.l_speed == self.r_speed:
-                distance = self.l_speed * t
-                #calculate the distance traveled.
-                x = x + (distance*np.cos(facing))
-                y = y + (distance*np.sin(facing))
-            #update my x and y positions, now that I know how far I’ve traveled.
-            else:
-                radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
-                  #this the radius the robot travels.
-                z2 = (self.l_speed-self.r_speed)*t/self.w
-                x =  x+(radius*np.cos(facing))-(radius*np.sin(facing-z2))
-                y =  y-(radius*np.sin(facing))+(radius*np.cos(facing-z2))
-                facing -= z2
-                #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
-                while z2<0:
-                    z2+=2*np.pi
-                while z2>2*np.pi:
-                    z2-=2*np.pi
-                while  facing<0:
-                    facing+=2*np.pi
-                while  facing>2*np.pi:
-                    facing-=2*np.pi
-                #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
+            x, y, facing = self.moving(x,y,facing,t)
             if self.invalid_point(x,y):
                 self.reward -= 100
                 self.is_over = True
@@ -312,6 +263,33 @@ class BotModel(gym.Env):
                         a.append((x,y,facing))
         return a
 
+    def moving(x,y,facing,t):
+        facing = facing*np.pi/12
+        if self.l_speed == self.r_speed:
+                distance = self.l_speed * t
+                #calculate the distance traveled.
+                x = x + (distance*np.cos(facing))
+                y = y + (distance*np.sin(facing))
+            #update my x and y positions, now that I know how far I’ve traveled.
+        else:
+            radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
+            #this the radius the robot travels.
+            z2 = (self.l_speed-self.r_speed)*t/self.w
+            x =  x+(radius*np.cos(facing))-(radius*np.sin(facing-z2))
+            y =  y-(radius*np.sin(facing))+(radius*np.cos(facing-z2))
+            facing -= z2
+            #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
+        while z2<0:
+            z2+=2*np.pi
+        while z2>2*np.pi:
+            z2-=2*np.pi
+        while  facing<0:
+            facing+=2*np.pi
+        while  facing>2*np.pi:
+            facing-=2*np.pi
+        #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
+        return x, y, facing*12/np.pi
+        
     def close(self):
         #self.trt.bye()
         pass
