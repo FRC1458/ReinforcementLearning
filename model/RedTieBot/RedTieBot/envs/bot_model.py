@@ -120,7 +120,7 @@ class BotModel(gym.Env):
         d0 = np.sqrt((58-self.x0)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y0)**2)
         d = np.sqrt((58-self.x)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y)**2)
         if self.is_over:
-            self.reward += ((1/d)*100)-((1/d0)*100)-((d-d0)/3)
+            self.reward += ((1/d)*100)-((1/d0)*100)
         s = self.s
         if abs(self.l_speed) <= 0.01 and abs(self.r_speed) <= 0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
