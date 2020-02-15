@@ -28,7 +28,7 @@ class FeatureTransformer:
         '''
     def transform(self, observation):
         x, y, facing, l_speed, r_speed = observation.values()
-        #print("transform: ", str(x), str(y), str(facing))
+        print(facing)
         '''
         return build_state([
             to_bin(x, self.bot_xposition_bins),
@@ -67,7 +67,7 @@ class Model:
             self.Q = np.load('save_Q.npy')
         else:
             self.Q = np.random.uniform(low=-1, high=1, size=(self.num_states, self.num_actions))
-            
+
     def predict(self, s):
         x=self.feature_transformer.transform(s)
         return self.Q[int(x)]
@@ -90,29 +90,39 @@ class Model:
             return self.env.action_space.fromQ(np.argmax(p))
     def setGraphics(self):
         env.graphics = True
+
     def stopGraphics(self):
         env.graphics = False
-'''
-    def calculated_path(self, observation):
-        a=self.env.reward_point()
-        x, y, facing = get_target()
-        if self.checkspot(x,y):
-            for n in range(len(a)):
-                if x in a[n][0] and y in a[n][1]:
-                    facing = a[n][2]
-            self.turn(angle=facing):
-            
-    def checkspot(self,x,y):
-        a=self.env.reward_point()
-        for n in range(len(a)):
-            if x in a[n][0] and y in a[n][1]:
-                return True
-        return False
 
-    def turn(self, x=None, y=None, angle=None):
-        if angle != None:
-            
-'''
+        '''
+        cx, cy, cfacing, cl_speed, cr_speed = observation
+        a=self.env.reward_point()
+        x, y, facing = self.get_target()
+        if facing == np.arctan((cy-y)/(cx-x))*12/np.pi:
+            if l_speed == -1 and r_speed == 1:
+                return ([0,0])
+            elif l_speed == 1 and r_speed == -1:
+                return([0,0])
+            elif l_speed == 0 and r_speed == 0:
+                return ([1,-1])
+            elif l_speed == 1 and r_speed == 1:
+                return ([-1,-1])
+            elif l_speed == -1 and r_speed == -1:
+                return ([1,1])
+
+    def check_turn(l_speed, r_speed):
+        if l_speed == -1 and r_speed == 1:
+                return ([0,0])
+        elif l_speed == 1 and r_speed == -1:
+            return([0,0])
+        elif l_speed == 0 and r_speed == 0:
+            return ([1,-1])
+        elif l_speed == 1 and r_speed == 1:
+            return ([-1,-1])
+        elif l_speed == -1 and r_speed == -1:
+            0qAreturn ([1,1])
+        '''
+
 def play_one(model,eps,gamma):
     observation=env.reset()
     model.reset()
@@ -150,11 +160,115 @@ def plot_running_avg(totalrewards):
     if nameeverything in ["yes", "y"]:
         model.save()
 
+lookuptable = [{'accn': 1, 'ang': 0, 'speed': 6, 'x': 1, 'y': 0},
+ {'accn': 1, 'ang': 0, 'speed': 12, 'x': 1, 'y': 0},
+ {'accn': 1, 'ang': 0, 'speed': 18, 'x': 2, 'y': 0},
+ {'accn': 1, 'ang': 1, 'speed': 6, 'x': 1, 'y': 0},
+ {'accn': 1, 'ang': 1, 'speed': 12, 'x': 1, 'y': 0},
+ {'accn': 1, 'ang': 1, 'speed': 18, 'x': 2, 'y': 0},
+ {'accn': 1, 'ang': 2, 'speed': 6, 'x': 0, 'y': 0},
+ {'accn': 1, 'ang': 2, 'speed': 12, 'x': 1, 'y': 0},
+ {'accn': 1, 'ang': 2, 'speed': 18, 'x': 2, 'y': 1},
+ {'accn': 1, 'ang': 3, 'speed': 6, 'x': 0, 'y': 0},
+ {'accn': 1, 'ang': 3, 'speed': 12, 'x': 1, 'y': 1},
+ {'accn': 1, 'ang': 3, 'speed': 18, 'x': 2, 'y': 2},
+ {'accn': 1, 'ang': 4, 'speed': 6, 'x': 0, 'y': 0},
+ {'accn': 1, 'ang': 4, 'speed': 12, 'x': 0, 'y': 1},
+ {'accn': 1, 'ang': 4, 'speed': 18, 'x': 1, 'y': 2},
+ {'accn': 1, 'ang': 5, 'speed': 6, 'x': 0, 'y': 1},
+ {'accn': 1, 'ang': 5, 'speed': 12, 'x': 0, 'y': 1},
+ {'accn': 1, 'ang': 5, 'speed': 18, 'x': 0, 'y': 2},
+ {'accn': 1, 'ang': 6, 'speed': 6, 'x': 0, 'y': 1},
+ {'accn': 1, 'ang': 6, 'speed': 12, 'x': 0, 'y': 1},
+ {'accn': 1, 'ang': 6, 'speed': 18, 'x': 0, 'y': 2},
+ {'accn': 2, 'ang': 0, 'speed': 6, 'x': 2, 'y': 0},
+ {'accn': 2, 'ang': 0, 'speed': 12, 'x': 4, 'y': 0},
+ {'accn': 2, 'ang': 0, 'speed': 18, 'x': 6, 'y': 0},
+ {'accn': 2, 'ang': 1, 'speed': 6, 'x': 2, 'y': 0},
+ {'accn': 2, 'ang': 1, 'speed': 12, 'x': 4, 'y': 1},
+ {'accn': 2, 'ang': 1, 'speed': 18, 'x': 5, 'y': 1},
+ {'accn': 2, 'ang': 2, 'speed': 6, 'x': 2, 'y': 1},
+ {'accn': 2, 'ang': 2, 'speed': 12, 'x': 3, 'y': 2},
+ {'accn': 2, 'ang': 2, 'speed': 18, 'x': 5, 'y': 3},
+ {'accn': 2, 'ang': 3, 'speed': 6, 'x': 1, 'y': 1},
+ {'accn': 2, 'ang': 3, 'speed': 12, 'x': 2, 'y': 2},
+ {'accn': 2, 'ang': 3, 'speed': 18, 'x': 4, 'y': 4},
+ {'accn': 2, 'ang': 4, 'speed': 6, 'x': 1, 'y': 2},
+ {'accn': 2, 'ang': 4, 'speed': 12, 'x': 2, 'y': 3},
+ {'accn': 2, 'ang': 4, 'speed': 18, 'x': 3, 'y': 5},
+ {'accn': 2, 'ang': 5, 'speed': 6, 'x': 0, 'y': 2},
+ {'accn': 2, 'ang': 5, 'speed': 12, 'x': 1, 'y': 4},
+ {'accn': 2, 'ang': 5, 'speed': 18, 'x': 1, 'y': 5},
+ {'accn': 2, 'ang': 6, 'speed': 6, 'x': 0, 'y': 2},
+ {'accn': 2, 'ang': 6, 'speed': 12, 'x': 0, 'y': 4},
+ {'accn': 2, 'ang': 6, 'speed': 18, 'x': 0, 'y': 6},
+ {'accn': 3, 'ang': 0, 'speed': 6, 'x': 4, 'y': 0},
+ {'accn': 3, 'ang': 0, 'speed': 12, 'x': 6, 'y': 0},
+ {'accn': 3, 'ang': 0, 'speed': 18, 'x': 9, 'y': 0},
+ {'accn': 3, 'ang': 1, 'speed': 6, 'x': 3, 'y': 1},
+ {'accn': 3, 'ang': 1, 'speed': 12, 'x': 6, 'y': 1},
+ {'accn': 3, 'ang': 1, 'speed': 18, 'x': 9, 'y': 2},
+ {'accn': 3, 'ang': 2, 'speed': 6, 'x': 3, 'y': 2},
+ {'accn': 3, 'ang': 2, 'speed': 12, 'x': 5, 'y': 3},
+ {'accn': 3, 'ang': 2, 'speed': 18, 'x': 8, 'y': 4},
+ {'accn': 3, 'ang': 3, 'speed': 6, 'x': 2, 'y': 2},
+ {'accn': 3, 'ang': 3, 'speed': 12, 'x': 4, 'y': 4},
+ {'accn': 3, 'ang': 3, 'speed': 18, 'x': 6, 'y': 6},
+ {'accn': 3, 'ang': 4, 'speed': 6, 'x': 2, 'y': 3},
+ {'accn': 3, 'ang': 4, 'speed': 12, 'x': 3, 'y': 5},
+ {'accn': 3, 'ang': 4, 'speed': 18, 'x': 4, 'y': 8},
+ {'accn': 3, 'ang': 5, 'speed': 6, 'x': 1, 'y': 3},
+ {'accn': 3, 'ang': 5, 'speed': 12, 'x': 1, 'y': 6},
+ {'accn': 3, 'ang': 5, 'speed': 18, 'x': 2, 'y': 9},
+ {'accn': 3, 'ang': 6, 'speed': 6, 'x': 0, 'y': 4},
+ {'accn': 3, 'ang': 6, 'speed': 12, 'x': 0, 'y': 6},
+ {'accn': 3, 'ang': 6, 'speed': 18, 'x': 0, 'y': 9},
+ {'accn': 4, 'ang': 0, 'speed': 6, 'x': 5, 'y': 0},
+ {'accn': 4, 'ang': 0, 'speed': 12, 'x': 9, 'y': 0},
+ {'accn': 4, 'ang': 0, 'speed': 18, 'x': 13, 'y': 0},
+ {'accn': 4, 'ang': 1, 'speed': 6, 'x': 5, 'y': 1},
+ {'accn': 4, 'ang': 1, 'speed': 12, 'x': 9, 'y': 2},
+ {'accn': 4, 'ang': 1, 'speed': 18, 'x': 12, 'y': 3},
+ {'accn': 4, 'ang': 2, 'speed': 6, 'x': 5, 'y': 3},
+ {'accn': 4, 'ang': 2, 'speed': 12, 'x': 8, 'y': 4},
+ {'accn': 4, 'ang': 2, 'speed': 18, 'x': 11, 'y': 6},
+ {'accn': 4, 'ang': 3, 'speed': 6, 'x': 4, 'y': 4},
+ {'accn': 4, 'ang': 3, 'speed': 12, 'x': 6, 'y': 6},
+ {'accn': 4, 'ang': 3, 'speed': 18, 'x': 9, 'y': 9},
+ {'accn': 4, 'ang': 4, 'speed': 6, 'x': 3, 'y': 5},
+ {'accn': 4, 'ang': 4, 'speed': 12, 'x': 4, 'y': 8},
+ {'accn': 4, 'ang': 4, 'speed': 18, 'x': 6, 'y': 11},
+ {'accn': 4, 'ang': 5, 'speed': 6, 'x': 1, 'y': 5},
+ {'accn': 4, 'ang': 5, 'speed': 12, 'x': 2, 'y': 9},
+ {'accn': 4, 'ang': 5, 'speed': 18, 'x': 3, 'y': 12},
+ {'accn': 4, 'ang': 6, 'speed': 6, 'x': 0, 'y': 5},
+ {'accn': 4, 'ang': 6, 'speed': 12, 'x': 0, 'y': 9},
+ {'accn': 4, 'ang': 6, 'speed': 18, 'x': 0, 'y': 13}]
+
+def mytest(env):
+    tn = []
+    for j in range(1,5):
+        for i in range(7):
+            for k in range(6, 19, 6):
+                env.facing, env.x, env.y, env.l_speed, env.r_speed = i, 10, 10, 0.0, 0.0
+                d = env.step2(j,k)[0]
+                nd = {'accn': j, 'speed': k, 'x': d['x']-10, 'y': d['y']-10, 'ang': d['facing']}
+                tn.append(nd)
+                print(nd)
+            print('====')
+        print('>>>')
+    #import pdb; pdb.set_trace()
+    import pprint
+    pprint.pprint(tn)
+    sys.exit(0)
+
 if __name__ == '__main__':
     env = gym.make('redtiebot-v0')
     ft = FeatureTransformer()
     model = Model(env,ft)
     gamma = 0.9
+
+    #mytest(env)
 
     if 'monitor' in sys.argv:
         filename = os.path.basename(__file__).split('.')[0]
@@ -171,6 +285,7 @@ if __name__ == '__main__':
         if n%100==0:
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
             print("total rewards:", totalrewards.sum())
+'''
             show = 'yes'
             #show = 'no'
             #comment out the above two lines as necessary. will's computer just doesn't like the input method of setting "show" by using input
@@ -179,7 +294,14 @@ if __name__ == '__main__':
             if show == 'no':
                 model.stopGraphics()
             if n%500==0:
+'''
+            word = input("show graphics? (y/n)")
+            if word == 'y':
+                model.setGraphics()
                 env.clearAndDraw()
+            if word == 'n' :
+                model.stopGraphics()
+
     #plt.plot(totalrewards)
     #plt.title("Rewards")
     #plt.show()
