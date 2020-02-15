@@ -28,7 +28,6 @@ class FeatureTransformer:
         '''
     def transform(self, observation):
         x, y, facing, l_speed, r_speed = observation.values()
-        print(facing)
         '''
         return build_state([
             to_bin(x, self.bot_xposition_bins),
@@ -285,22 +284,24 @@ if __name__ == '__main__':
         if n%100==0:
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
             print("total rewards:", totalrewards.sum())
-'''
+
             show = 'yes'
             #show = 'no'
-            #comment out the above two lines as necessary. will's computer just doesn't like the input method of setting "show" by using input
+            #comment out the above two lines as necessary
             if show == 'yes':
                 model.setGraphics()
+                env.clearAndDraw()
             if show == 'no':
                 model.stopGraphics()
             if n%500==0:
-'''
-            word = input("show graphics? (y/n)")
-            if word == 'y':
-                model.setGraphics()
-                env.clearAndDraw()
-            if word == 'n' :
-                model.stopGraphics()
+                '''
+                word = input("show graphics? (y/n)")
+                if word == 'y':
+                    model.setGraphics()
+                    env.clearAndDraw()
+                if word == 'n' :
+                    model.stopGraphics()
+                '''
 
     #plt.plot(totalrewards)
     #plt.title("Rewards")
