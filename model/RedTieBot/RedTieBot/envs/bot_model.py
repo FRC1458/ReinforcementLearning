@@ -25,7 +25,7 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a=self.reward_point()
-        self.w=50
+        self.w=5
         #width of robot
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
@@ -117,7 +117,7 @@ class BotModel(gym.Env):
         
     def reset(self):
         s = self.s
-        self.x0, self.y0, self.facing = self.generate_point()
+        self.x0, self.y0, self.facing = self.generate_point()       
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
@@ -197,6 +197,7 @@ class BotModel(gym.Env):
         if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
             print("ran into the triangle corners")
             print('CRASH: ' + str(x), str(y))
+            print('SPEED; ' + str(self.l_speed), str(self.r_speed))
             if self.graphics == True:
                 self.trt.penup()
                 self.trt.goto(x,y)
@@ -222,6 +223,8 @@ class BotModel(gym.Env):
         if x > 82.1*s or y > 159.8*s or x < 0 or y<0:
             print('outside the barrier')
             print('CRASH: ' + str(x), str(y))
+            print('SPEED; ' + str(self.l_speed), str(self.r_speed))
+            print('FACING: ' + str(self.facing))
             if self.graphics == True:
                 self.trt.penup()
                 self.trt.goto(x,y)
