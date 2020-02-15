@@ -266,7 +266,7 @@ class BotModel(gym.Env):
                         a.append((x,y,facing))
         return a
 
-    def moving(x,y,facing,t):
+    def moving(self,x,y,facing,t):
         facing = facing*np.pi/12
         if self.l_speed == self.r_speed:
                 distance = self.l_speed * t
@@ -282,14 +282,14 @@ class BotModel(gym.Env):
             y =  y-(radius*np.sin(facing))+(radius*np.cos(facing-z2))
             facing -= z2
             #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
-        while z2<0:
-            z2+=2*np.pi
-        while z2>2*np.pi:
-            z2-=2*np.pi
-        while  facing<0:
-            facing+=2*np.pi
-        while  facing>2*np.pi:
-            facing-=2*np.pi
+            while z2<0:
+                z2+=2*np.pi
+            while z2>2*np.pi:
+                z2-=2*np.pi
+            while facing<0:
+                facing+=2*np.pi
+            while facing>2*np.pi:
+                facing-=2*np.pi
         #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
         return x, y, facing*12/np.pi
         
