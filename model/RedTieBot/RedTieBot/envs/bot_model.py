@@ -56,12 +56,22 @@ class BotModel(gym.Env):
         self.trt = turtle.Turtle()
         #the scale of the turtle.
 
+    def step2(self, m, n):
+        for i in range(m):
+            self.step([1, 1])
+        for i in range(n):
+            self.step([0,0])
+        r = None
+        for i in range(m):
+            r = self.step([-1, -1])
+        return r
+        
     def step(self, action):
         s = self.s
         try:
-            self.l_speed += action[0]
+            self.l_speed += 0.3*action[0]
             #in the list "action", the first value is the left wheel speed.
-            self.r_speed += action[1]
+            self.r_speed += 0.3*action[1]
             #in the list "action", the second value is the right wheel speed.
         except Exception as e:
             print(e)
