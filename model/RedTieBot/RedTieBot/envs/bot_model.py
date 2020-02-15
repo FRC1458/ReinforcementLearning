@@ -17,7 +17,7 @@ class ActionSpace:
     def fromQ(self, val):
        # print(val)
         return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces))) - 1]
-    
+
 class BotModel(gym.Env):
     def __init__(self):
         self.graphics = False
@@ -65,7 +65,7 @@ class BotModel(gym.Env):
         for i in range(m):
             r = self.step([-1, -1])
         return r
-        
+
     def step(self, action):
         s = self.s
         try:
@@ -105,7 +105,7 @@ class BotModel(gym.Env):
                 #see desmos link on slack for explanation of above three lines. It's essentially direction calculationswhile z<0:
                 while z<0:
                     z+=2*np.pi
-                
+
                 while z>2*np.pi:
                     z-=2*np.pi
 
@@ -115,7 +115,7 @@ class BotModel(gym.Env):
                 while self.facing>24:
                     self.facing-=24
                 #making sure that the z-angle measurement doesn't go below 0 or above 2pi
-                
+
         ob = dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
         #when it's training, it takes the data from the environment and says "I have this to use now."
         episode_over = self.is_over
@@ -124,7 +124,7 @@ class BotModel(gym.Env):
         #openai needs that line to be happy. means nothing
         return ob, self.reward, episode_over, info
         #spit back all that data.
-        
+
     def reset(self):
         s = self.s
         self.x0, self.y0, self.facing = self.generate_point()
@@ -142,7 +142,7 @@ class BotModel(gym.Env):
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
-      
+
     def checkreward(self):
         d0 = np.sqrt((58-self.x0)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y0)**2)
         d = np.sqrt((58-self.x)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y)**2)
@@ -201,7 +201,7 @@ class BotModel(gym.Env):
                 a.circle(0.05)
                 '''
                 #print("not crash: ("+str(x)+","+str(y)+")")
-            
+
     def invalid_point(self, x, y):
         s = self.s
         if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
@@ -221,14 +221,14 @@ class BotModel(gym.Env):
 
         if y > 87.526*s and y < 95.146*s and x > 0 and x < 14.1*s:
             print('ran into the east spinner')
-            return True 
+            return True
             #robot ran into the east spinner and loses points
 
         if y > 64.68*s and y < 72.3*s and x > 68*s and x < 82*s:
             print('ran into the west spinner')
-            return True 
+            return True
             #robot ran into the west spinner and loses points
-            
+
         if x > 82.1*s or y > 159.8*s or x < 0 or y<0:
             print('outside the barrier')
             print('CRASH: ' + str(x), str(y))
@@ -241,25 +241,25 @@ class BotModel(gym.Env):
                 self.trt.width(1)
                 self.trt.penup()
                 print()
-            return True 
+            return True
             #robot went outside the barrier
 
         if (y-105.979*s)>=((106.403*s-105.979*s)/(50.871*s-49.91*s))*(x-49.91*s) and (y-106.936*s)<=((107.36*s-106.936*s)/(50.439*s-49.478*s))*(x-49.478*s):
           if (y-105.97*s)>=((106.936*s-105.979*s)/(49.478*s-49.91*s))*(x-49.91*s) and (y-106.403*s)<=((107.36*s-106.403*s)/(50.439*s-50.871*s))*(x-50.871*s):
             print('ran into the top pillar')
-            return True 
+            return True
             #robot ran into the top right pillar of the rendezvous point
 
         if (y-52.469*s)>=((52.883*s-52.469*s)/(32.604*s-31.666*s))*(x-31.666*s) and (y-53.403*s)<=((53.817*s-53.403*s)/(32.182*s-31.244*s))*(x-31.244*s):
           if (y-52.469*s)>=((53.403*s-52.469*s)/(31.244*s-31.666*s))*(x-31.666*s) and (y-52.883*s)<=((53.817*s-52.883*s)/(32.182*s-32.604*s))*(x-32.604*s):
             print('ran into the south pillar')
-            return True 
+            return True
             #robot ran into the bottom left pillar of the rendezvous point
 
         if (y-90.379)>=((90.799-90.379)/(15.42-14.529))*(x-14.529) and (y-91.336)<=((91.76-91.336)/(15.056-14.097))*(x-14.097):
           if (y-90.379)>=((91.336-90.379)/(14.097-14.529))*(x-14.529) and (y-90.799)<=((91.76-90.799)/(15.056-15.42))*(x-15.42):
             print('ran into the west pillar')
-            return True 
+            return True
             #robot ran into the top left pillar of the rendezvous point
 
         if (y-68.07)>=((68.494-68.07)/(68-67.039))*(x-67.039) and (y-69.027)<=((69.451-69.027)/(67.568-66.607))*(x-66.607):
@@ -311,7 +311,7 @@ class BotModel(gym.Env):
                     if facing > 2:
                         a.append((x,y,facing))
         return a
-            
+
     def close(self):
         #self.trt.bye()
         pass

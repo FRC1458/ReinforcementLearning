@@ -67,7 +67,7 @@ class Model:
             self.Q = np.load('save_Q.npy')
         else:
             self.Q = np.random.uniform(low=-1, high=1, size=(self.num_states, self.num_actions))
-            
+
     def predict(self, s):
         x=self.feature_transformer.transform(s)
         return self.Q[int(x)]
@@ -90,7 +90,7 @@ class Model:
             return self.env.action_space.fromQ(np.argmax(p))
     def setGraphics(self):
         env.graphics = True
-        
+
     def stopGraphics(self):
         env.graphics = False
 
@@ -109,7 +109,7 @@ class Model:
                 return ([-1,-1])
             elif l_speed == -1 and r_speed == -1:
                 return ([1,1])
-            
+
     def check_turn(l_speed, r_speed):
         if l_speed == -1 and r_speed == 1:
                 return ([0,0])
@@ -122,7 +122,7 @@ class Model:
         elif l_speed == -1 and r_speed == -1:
             0qAreturn ([1,1])
         '''
-            
+
 def play_one(model,eps,gamma):
     observation=env.reset()
     model.reset()
@@ -301,7 +301,7 @@ if __name__ == '__main__':
                 env.clearAndDraw()
             if word == 'n' :
                 model.stopGraphics()
-                
+
     #plt.plot(totalrewards)
     #plt.title("Rewards")
     #plt.show()
