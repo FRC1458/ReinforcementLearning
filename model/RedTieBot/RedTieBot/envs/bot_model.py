@@ -292,7 +292,7 @@ class BotModel(gym.Env):
                 facing-=2*np.pi
         #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
         return x, y, facing*12/np.pi
-        
+
     def close(self):
         #self.trt.bye()
         pass
