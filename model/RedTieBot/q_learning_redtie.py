@@ -171,10 +171,12 @@ if __name__ == '__main__':
         if n%100==0:
             print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
             print("total rewards:", totalrewards.sum())
-            x = input("show graphics? (y/n)")
-            if x == 'y':
+            show = 'yes'
+            #show = 'no'
+            #comment out the above two lines as necessary. will's computer just doesn't like the input method of setting "show" by using input
+            if show == 'yes':
                 model.setGraphics()
-            if x == 'n':
+            if show == 'no':
                 model.stopGraphics()
             if n%500==0:
                 env.clearAndDraw()
