@@ -124,7 +124,6 @@ class BotModel(gym.Env):
         s = self.s
         if abs(self.l_speed) <= 0.01 and abs(self.r_speed) <= 0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
-        #If I'm in position in front of the goal and facing the right way (but with extra parameters)
             self.is_over = True
             #end the game!
             #print(20*'>' + 'Reached')
@@ -157,8 +156,6 @@ class BotModel(gym.Env):
         s = self.s
         if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
             print("ran into the triangle corners")
-            print('CRASH: ' + str(x), str(y))
-            print('SPEED; ' + str(self.l_speed), str(self.r_speed))
             if self.graphics == True:
                 self.trt.penup()
                 self.trt.goto(x,y)
@@ -167,7 +164,6 @@ class BotModel(gym.Env):
                 self.trt.forward(1)
                 self.trt.width(1)
                 self.trt.penup()
-                print()
             return True
             #robot ran into the triangles in the corners and loses points
 
@@ -183,9 +179,6 @@ class BotModel(gym.Env):
 
         if x > 82.1*s or y > 159.8*s or x < 0 or y<0:
             print('outside the barrier')
-            print('CRASH: ' + str(x), str(y))
-            print('SPEED; ' + str(self.l_speed), str(self.r_speed))
-            print('FACING: ' + str(self.facing))
             if self.graphics == True:
                 self.trt.penup()
                 self.trt.goto(x,y)
@@ -194,7 +187,6 @@ class BotModel(gym.Env):
                 self.trt.forward(1)
                 self.trt.width(1)
                 self.trt.penup()
-                print()
             return True
             #robot went outside the barrier
 
@@ -269,7 +261,9 @@ class BotModel(gym.Env):
     def moving(self, x,y,facing,t):
         facing = facing*np.pi/12
         if self.l_speed == self.r_speed:
+            print('t: ' + str(t))
             distance = self.l_speed * t
+            print('distance: ' + str(distance))
             #calculate the distance traveled.
             x = x + (distance*np.cos(facing))
             y = y + (distance*np.sin(facing))
