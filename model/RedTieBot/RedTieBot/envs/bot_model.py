@@ -260,10 +260,8 @@ class BotModel(gym.Env):
 
     def moving(self, x,y,facing,t):
         facing = facing*np.pi/12
-        if self.l_speed == self.r_speed:
-            print('t: ' + str(t))
-            distance = self.l_speed * t
-            print('distance: ' + str(distance))
+        if abs(self.l_speed - self.r_speed) <= 0.01:
+            distance = (self.l_speed + self.r_speed) * .5 * t
             #calculate the distance traveled.
             x = x + (distance*np.cos(facing))
             y = y + (distance*np.sin(facing))
@@ -272,8 +270,8 @@ class BotModel(gym.Env):
             radius = (self.w/2)*(self.l_speed+self.r_speed)/(self.l_speed-self.r_speed)
             #this the radius the robot travels.
             z2 = (self.l_speed-self.r_speed)*t/self.w
-            x =  x+(radius*np.cos(facing))-(radius*np.sin(facing-z2))
-            y =  y-(radius*np.sin(facing))+(radius*np.cos(facing-z2))
+            x =  x+(radius*np.sin(facing))-(radius*np.sin(facing-z2))
+            y =  y-(radius*np.cos(facing))+(radius*np.cos(facing-z2))
             facing -= z2
             #see desmos link on slack for explanation of above three lines. It’s essentially direction calculations
             while z2<0:
