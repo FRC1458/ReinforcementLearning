@@ -112,7 +112,7 @@ class BotModel(gym.Env):
         self.is_over = False
         if self.graphics:
             self.trt.penup()
-            self.trt.goto(self.x0*self.s, self.y0*self.s)
+            self.trt.goto(self.x0*s, self.y0*s)
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
@@ -130,8 +130,8 @@ class BotModel(gym.Env):
             #print(20*'>' + 'Reached')
             self.reward += 100
             #i get a lot of points
-        x = self.x*s
-        y = self.y*s
+        x = self.x
+        y = self.y
         t = 0
         facing = self.facing
         N = 10
@@ -155,22 +155,16 @@ class BotModel(gym.Env):
 
         if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
             print('ran into the east spinner')
-            print(x, y)
-            print("")
             return True
             #robot ran into the east spinner and loses points
 
         if y > 64.68 and y < 72.3 and x > 68 and x < 82:
             print('ran into the west spinner')
-            print(x, y)
-            print("")
             return True
             #robot ran into the west spinner and loses points
 
         if x > 82.1 or y > 159.8 or x < 0 or y<0:
             print('into the barrier')
-            print(x, y)
-            print("")
             return True
             #robot went outside the barrier
 
@@ -315,6 +309,7 @@ class BotModel(gym.Env):
         s = self.s
         if self.graphics:
             self.trt = turtle.Turtle()
+            self.trt.shape('square')
             self.trt.clear()
             self.trt.penup()
             self.trt.pencolor('red')

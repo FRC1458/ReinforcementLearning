@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import turtle
 import RedTieBot
+import time
 
 def build_state(features):
     return int("".join(map(lambda feature: str(int(feature)), features)))
@@ -278,8 +279,8 @@ if __name__ == '__main__':
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
     
-    #show = 'yes'
-    show = 'no'
+    show = 'yes'
+    #show = 'no'
     env.fast_mode = True
     #env.fast_mode = False
 
@@ -292,6 +293,7 @@ if __name__ == '__main__':
                 print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
                 print("total rewards:", totalrewards.sum())
             if n%500==0:
+                print("500 more iterations have passed.")
                 if show == 'yes':
                     model.setGraphics()
                     env.clearAndDraw()
