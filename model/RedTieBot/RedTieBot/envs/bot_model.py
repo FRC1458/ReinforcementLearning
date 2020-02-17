@@ -21,7 +21,7 @@ class ActionSpace:
 class BotModel(gym.Env):
     def __init__(self):
         self.graphics = False
-        self.s = 1
+        self.s = 2
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a=self.reward_point()
@@ -45,7 +45,7 @@ class BotModel(gym.Env):
         #right wheel speed
         self.is_over=False
         #the game is not over yet.
-        self.reward = 0#the points rewarded to the robot during the simulation
+        self.reward = 0#the  a rewarded to the robot during the simulation
         self.counter = 0
         self.observation_space = b.Box(0, 1.0*self.s, shape=(int(821/10)*self.s, int(1598/10)*self.s, 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
@@ -53,8 +53,8 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
         self.path = []
-        self.trt = turtle.Turtle()
         #the scale of the turtle.
+        self.fast_mode = 0
 
     def step2(self, m, n):
         for i in range(m):
@@ -110,8 +110,9 @@ class BotModel(gym.Env):
         self.r_speed = 0
         self.reward = 0
         self.is_over = False
-        self.trt.penup()
-        self.trt.goto(self.x0*self.s, self.y0*self.s)
+        if self.graphics:
+            self.trt.penup()
+            self.trt.goto(self.x0*self.s, self.y0*self.s)
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
@@ -137,51 +138,50 @@ class BotModel(gym.Env):
         for check in range(N):
             t+=self.t/N
             x, y, facing = self.moving(x,y,facing,t)
-            if self.invalid_point(x,y):
-                self.reward -= 100
-                self.is_over = True
-
-                #print("crash: ("+str(x)+","+str(y)+")")
-                return
+            if self.fast_mode:
+                if self.invalid_point_fast(x,y):
+                    self.reward -= 100
+                    self.is_over = True
             else:
-                '''
-                a.penup()
-                a.goto(x,y)
-                a.pendown()
-                a.circle(0.05)
-                '''
-                #print("not crash: ("+str(x)+","+str(y)+")")
+                if self.invalid_point(x, y):
+                    self.reward -= 100
+                    self.is_over = True
 
     def invalid_point(self, x, y):
-        s = self.s
-        if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
+        if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
             print("ran into the triangle corners")
             return True
             #robot ran into the triangles in the corners and loses points
 
-        if y > 87.526*s and y < 95.146*s and x > 0 and x < 14.1*s:
+        if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
             print('ran into the east spinner')
+            print(x, y)
+            print("")
             return True
             #robot ran into the east spinner and loses points
 
-        if y > 64.68*s and y < 72.3*s and x > 68*s and x < 82*s:
+        if y > 64.68 and y < 72.3 and x > 68 and x < 82:
             print('ran into the west spinner')
+            print(x, y)
+            print("")
             return True
             #robot ran into the west spinner and loses points
 
-        if x > 82.1*s or y > 159.8*s or x < 0 or y<0:
+        if x > 82.1 or y > 159.8 or x < 0 or y<0:
             print('into the barrier')
+            print(x, y)
+            print("")
             return True
             #robot went outside the barrier
 
-        if (y-105.979*s)>=((106.403*s-105.979*s)/(50.871*s-49.91*s))*(x-49.91*s) and (y-106.936*s)<=((107.36*s-106.936*s)/(50.439*s-49.478*s))*(x-49.478*s):
-          if (y-105.97*s)>=((106.936*s-105.979*s)/(49.478*s-49.91*s))*(x-49.91*s) and (y-106.403*s)<=((107.36*s-106.403*s)/(50.439*s-50.871*s))*(x-50.871*s):
+        if (y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91) and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478):
+          if (y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871):
             print('ran into the top pillar')
             return True
             #robot ran into the top right pillar of the rendezvous point
 
-        if (y-52.469*s)>=((52.883*s-52.469*s)/(32.604*s-31.666*s))*(x-31.666*s) and (y-53.403*s)<=((53.817*s-53.403*s)/(32.182*s-31.244*s))*(x-31.244*s):
-          if (y-52.469*s)>=((53.403*s-52.469*s)/(31.244*s-31.666*s))*(x-31.666*s) and (y-52.883*s)<=((53.817*s-52.883*s)/(32.182*s-32.604*s))*(x-32.604*s):
+        if (y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244):
+          if (y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604):
             print('ran into the south pillar')
             return True
             #robot ran into the bottom left pillar of the rendezvous point
@@ -199,6 +199,40 @@ class BotModel(gym.Env):
              #robot ran into the bottom right pillar of the rendezvous point
         return False
 
+    def invalid_point_fast(self, x, y):
+        if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
+            return True
+            #robot ran into the triangles in the corners and loses points
+
+        if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
+            return True
+            #robot ran into the east spinner and loses points
+
+        if y > 64.68 and y < 72.3 and x > 68 and x < 82:
+            return True
+            #robot ran into the west spinner and loses points
+
+        if x > 82.1 or y > 159.8 or x < 0 or y<0:
+            return True
+            #robot went outside the barrier
+
+        if (y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91) and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871)):
+            return True
+            #robot ran into the top right pillar of the rendezvous point
+
+        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244)) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604)):
+            return True
+            #robot ran into the bottom left pillar of the rendezvous point
+
+        if ((y-90.379)>=((90.799-90.379)/(15.42-14.529))*(x-14.529) and (y-91.336)<=((91.76-91.336)/(15.056-14.097))*(x-14.097)) and ((y-90.379)>=((91.336-90.379)/(14.097-14.529))*(x-14.529) and (y-90.799)<=((91.76-90.799)/(15.056-15.42))*(x-15.42)):
+            return True
+            #robot ran into the top left pillar of the rendezvous point
+
+        if ((y-68.07)>=((68.494-68.07)/(68-67.039))*(x-67.039) and (y-69.027)<=((69.451-69.027)/(67.568-66.607))*(x-66.607)) and ((y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68)):
+             return True
+             #robot ran into the bottom right pillar of the rendezvous point
+        return False
+
     def render(self, mode='human'):
         s = self.s
         if self.graphics == True:
@@ -206,7 +240,7 @@ class BotModel(gym.Env):
             self.trt.width(1)
             self.trt.pendown()
             self.trt.setheading(self.facing*15)
-            self.trt.goto(self.x, self.y)
+            self.trt.goto(self.x*s, self.y*s)
 
     def generate_point(self):
         s = self.s
@@ -216,8 +250,12 @@ class BotModel(gym.Env):
             while T:
                 x = np.random.randint(82)
                 y = np.random.randint(159)
-                if not self.invalid_point(x,y):
-                    return x,y,facing
+                if not self.fast_mode:
+                    if not self.invalid_point(x,y):
+                        return x,y,facing
+                else:
+                    if not self.invalid_point_fast(x,y):
+                        return x,y,facing
         else:
             return self.a[np.random.choice(len(self.a))]
 
@@ -275,7 +313,8 @@ class BotModel(gym.Env):
 
     def clearAndDraw(self):
         s = self.s
-        if self.graphics == True:
+        if self.graphics:
+            self.trt = turtle.Turtle()
             self.trt.clear()
             self.trt.penup()
             self.trt.pencolor('red')

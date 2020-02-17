@@ -274,19 +274,23 @@ if __name__ == '__main__':
         monitor_dir = './' + filename + '_' + str(datetime.now())
         env = wrappers.Monitor(env, monitor_dir)
 
-    N=5000
+    N=10000
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
+    
+    #show = 'yes'
+    show = 'no'
+    env.fast_mode = True
+    #env.fast_mode = False
+
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
         if n%100==0:
-            print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
-            print("total rewards:", totalrewards.sum())
-            show = 'yes'
-            #show = 'no'
-            #comment out the above two lines as necessary
+            if not env.fast_mode:
+                print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
+                print("total rewards:", totalrewards.sum())
             if n%500==0:
                 if show == 'yes':
                     model.setGraphics()
