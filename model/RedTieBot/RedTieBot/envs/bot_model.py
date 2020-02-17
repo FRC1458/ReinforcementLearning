@@ -156,14 +156,6 @@ class BotModel(gym.Env):
         s = self.s
         if (y <= -0.364 * x + 6.255*s) or (y <= 0.364 * x - 23.626*s) or (y >= 0.364 * x + 153.545*s) or (y >= -0.364 * x + 183.426*s):
             print("ran into the triangle corners")
-            if self.graphics == True:
-                self.trt.penup()
-                self.trt.goto(x,y)
-                self.trt.width(5)
-                self.trt.pendown()
-                self.trt.forward(1)
-                self.trt.width(1)
-                self.trt.penup()
             return True
             #robot ran into the triangles in the corners and loses points
 
@@ -178,15 +170,7 @@ class BotModel(gym.Env):
             #robot ran into the west spinner and loses points
 
         if x > 82.1*s or y > 159.8*s or x < 0 or y<0:
-            print('outside the barrier')
-            if self.graphics == True:
-                self.trt.penup()
-                self.trt.goto(x,y)
-                self.trt.width(5)
-                self.trt.pendown()
-                self.trt.forward(1)
-                self.trt.width(1)
-                self.trt.penup()
+            print('into the barrier')
             return True
             #robot went outside the barrier
 
