@@ -47,7 +47,7 @@ class BotModel(gym.Env):
         #the game is not over yet.
         self.reward = 0#the  a rewarded to the robot during the simulation
         self.counter = 0
-        self.observation_space = b.Box(0, 1.0*self.s, shape=(int(821/10)*self.s, int(1598/10)*self.s, 24))
+        self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
         #The box is technically a 1x1x1 cube.
         self.action_space = ActionSpace()
@@ -310,6 +310,7 @@ class BotModel(gym.Env):
         if self.graphics:
             self.trt = turtle.Turtle()
             self.trt.shape('square')
+            
             self.trt.clear()
             self.trt.penup()
             self.trt.pencolor('red')
