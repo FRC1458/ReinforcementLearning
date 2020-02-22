@@ -22,6 +22,7 @@ class BotModel(gym.Env):
     def __init__(self):
         self.graphics = False
         self.s = 2
+        #the scale of the graphics
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a=self.reward_point()
@@ -53,7 +54,6 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
         self.path = []
-        #the scale of the turtle.
         self.fast_mode = 0
 
     def step2(self, m, n):
@@ -85,7 +85,6 @@ class BotModel(gym.Env):
         elif self.r_speed < -128:
             self.r_speed = -128
         #above lines limit the speed of the wheels to 128 cm/s backwards or 127 cm/s forward.
-        self.render()
         self.checkreward()
         if not self.is_over:
             self.x, self.y, self.facing = self.moving(self.x,self.y,self.facing,self.t)
@@ -94,13 +93,14 @@ class BotModel(gym.Env):
         episode_over = self.is_over
         #checks to see if it's over.
         info = dict()
+        self.render()
         #openai needs that line to be happy. means nothing
         return ob, self.reward, episode_over, info
         #spit back all that data.
 
     def reset(self):
         s = self.s
-        self.x0, self.y0, self.facing = self.generate_point()       
+        self.x0, self.y0, self.facing = self.generate_point()      
         self.x = self.x0
         self.y = self.y0
         #set position to a random point
@@ -170,6 +170,8 @@ class BotModel(gym.Env):
             return True
             #robot went outside the barrier
 
+        #lines past this point are in point-slope form, not slope-intercept.
+
         if (y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91) and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478):
           if (y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871):
             print('ran into the top pillar')
@@ -232,11 +234,11 @@ class BotModel(gym.Env):
     def render(self, mode='human'):
         s = self.s
         if self.graphics == True:
-            self.trt.speed(0)
             self.trt.width(1)
             self.trt.pendown()
             self.trt.setheading(self.facing*15)
             self.trt.goto(self.x*s, self.y*s)
+            #these few lines just turn the turtle as needed and go to the new point. Accounts for the scalar.
 
     def generate_point(self):
         s = self.s
@@ -281,6 +283,8 @@ class BotModel(gym.Env):
         return a
 
     def moving(self, x,y,facing,t):
+        #this function calculates the robot's new point.
+        #takes the direction and each of the wheel speeds to calculate the point change.
         facing = facing*np.pi/12
         if abs(self.l_speed - self.r_speed) <= 0.01:
             distance = (self.l_speed + self.r_speed) * .5 * t
@@ -304,7 +308,7 @@ class BotModel(gym.Env):
                 facing+=2*np.pi
             while  facing>2*np.pi:
                 facing-=2*np.pi
-        #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
+            #making sure that the z-angle measurement doesn’t go below 0 or above 2pi
         return x, y, facing*12/np.pi
         
     def close(self):
@@ -316,6 +320,7 @@ class BotModel(gym.Env):
         if self.graphics:
             self.trt = turtle.Turtle()
             self.trt.shape('square')
+            self.trt.speed(0)
             
             self.trt.clear()
             self.trt.penup()

@@ -8,7 +8,6 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-import turtle
 import RedTieBot
 import time
 
@@ -282,8 +281,8 @@ if __name__ == '__main__':
     
     show = 'yes'
     #show = 'no'
-    env.fast_mode = True
-    #env.fast_mode = False
+    #env.fast_mode = True; show = 'no'
+    env.fast_mode = False
 
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
