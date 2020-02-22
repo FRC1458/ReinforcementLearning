@@ -90,7 +90,7 @@ class Model:
     def setGraphics(self):
         env.graphics = True
 
-    def stopGraphics(self):
+    def stopGraphics(self, observation):
         env.graphics = False
 
         cx, cy, cfacing, cl_speed, cr_speed = observation
@@ -283,6 +283,16 @@ if __name__ == '__main__':
     show = 'no'
     env.fast_mode = True; show = 'no'
     #env.fast_mode = False
+'''
+
+    fast = input("Fast mode? (y or n)")
+    if fast == 'y':
+        show = 'yes'
+        env.fast_mode = False
+    else:
+        show = 'no'
+        env.fast_mode = True; show = 'no'
+'''
 
     for n in range(N):
         eps=1.0/np.sqrt(n+1)

@@ -108,7 +108,9 @@ class BotModel(gym.Env):
         self.l_speed = 0
         #stop the left wheel
         self.r_speed = 0
+        #stop the right wheel
         self.reward = 0
+        #reset the reward value
         self.is_over = False
         if self.graphics:
             self.trt.penup()
