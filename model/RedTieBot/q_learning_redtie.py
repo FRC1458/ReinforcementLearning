@@ -90,7 +90,7 @@ class Model:
     def setGraphics(self):
         env.graphics = True
 
-    def stopGraphics(self):
+    def stopGraphics(self, observation):
         env.graphics = False
 
         cx, cy, cfacing, cl_speed, cr_speed = observation
