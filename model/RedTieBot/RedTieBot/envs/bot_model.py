@@ -132,6 +132,8 @@ class BotModel(gym.Env):
             #print(20*'>' + 'Reached')
             self.reward += 100
             #i get a lot of points
+            if not self.fast_mode:
+                print('reward given!')
         x = self.x
         y = self.y
         t = 0
