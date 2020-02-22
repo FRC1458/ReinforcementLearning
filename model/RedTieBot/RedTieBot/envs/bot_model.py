@@ -142,23 +142,24 @@ class BotModel(gym.Env):
             self.reward += 100
             #self.is_over = True
             #print("Made it -1")
-
-        x = self.x
-        y = self.y
-        t = 0
-        facing = self.facing
-        N = 10
-        for check in range(N):
-            t+=self.t/N
-            x, y, facing = self.moving(x,y,facing,t)
-            if self.fast_mode:
-                if self.invalid_point_fast(x,y):
-                    self.reward -= 100
-                    self.is_over = True
-            else:
-                if self.invalid_point(x, y):
-                    self.reward -= 100
-                    self.is_over = True
+            
+        if not self.is_over:
+            x = self.x
+            y = self.y
+            t = 0
+            facing = self.facing
+            N = 10
+            for check in range(N):
+                t+=self.t/N
+                x, y, facing = self.moving(x,y,facing,t)
+                if self.fast_mode:
+                    if self.invalid_point_fast(x,y):
+                        self.reward -= 100
+                        self.is_over = True
+                else:
+                    if self.invalid_point(x, y):
+                        self.reward -= 100
+                        self.is_over = True
 
     def invalid_point(self, x, y):
         if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):

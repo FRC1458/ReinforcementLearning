@@ -48,10 +48,15 @@ class Model:
         self.num_actions = 9
         self.load()
         self.counter = 0
+        self.sm = {'not facing': self.rotate,
+                   'facing': self.move,
+                   'reached': self.rotate}
+        self.state = 'not facing'
 
     def reset(self):
         self.counter = 0
         self.target = None
+        self.state = 'not facing'
 
     def get_target(self):
         if self.target is None:
@@ -95,27 +100,44 @@ class Model:
         env.graphics = False
 
     def calculated_path(observation):
-        cx, cy, cfacing, cl_speed, cr_speed = observation
         a=self.env.reward_point()
-        x, y, facing = self.get_target()
-        if cx != x and cy != y:
-            if facing != int(np.arctan((cy-y)/(cx-x))*12/np.pi):
-                return check_turn(l_speed, r_speed)
+        self.sm[self.state](observation)  
         
-    def check_turn(l_speed, r_speed):
-        l_speed = int(10*l_speed/3)
-        r_speed = int(10*r_speed/3)
-        if l_speed == -1 and r_speed == 1:
-            return ([0,0])
-        elif l_speed == 1 and r_speed == -1:
-            return([0,0])
-        elif l_speed == 0 and r_speed == 0:
-            return ([1,-1])
-        elif abs(l_speed) >= 1:
-            l=-1*abs(l_speed)/l_speed
-        elif r_speed >= 1:
-            r=-1*abs(r_speed)/r_speed
-        return([l,r])
+    def rotate(observation):
+        cx, cy, cfacing, l_speed, r_speed = observation
+        x, y, facing = self.get_target()
+        if self.angle is None:
+            if self.state == 'not_facing':
+                if cx != x:
+                    self.angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
+                    if self.angle < 0:
+                        self.angle += 24
+                else:
+                    self.angle = 6
+            else:
+                self.state = facing
+        if self.angle != cfacing:
+            l_speed = int(10*l_speed/3)
+            r_speed = int(10*r_speed/3)
+            if l_speed == -1 and r_speed == 1:
+                return ([0,0])
+            elif l_speed == 1 and r_speed == -1:
+                return([0,0])
+            elif l_speed == 0 and r_speed == 0:
+                return ([1,-1])
+            elif abs(l_speed) >= 1:
+                l=-1*abs(l_speed)/l_speed
+            elif r_speed >= 1:
+                r=-1*abs(r_speed)/r_speed
+            return([l,r])
+        else:
+            self.angle = None
+            self.state = 'facing'
+
+    def move(observation):
+        cx, cy, cfacing, l_speed, r_speed = observation
+        x, y, facing = self.get_target()
+        dist = np.sqrt((cx-x)**2 + (cy-y)**2)
 
 def play_one(model,eps,gamma):
     observation=env.reset()
