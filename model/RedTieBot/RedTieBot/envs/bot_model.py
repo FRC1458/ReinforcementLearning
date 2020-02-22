@@ -126,7 +126,7 @@ class BotModel(gym.Env):
         if self.is_over:
             self.reward += ((1/d)*100)-((1/d0)*100)
         s = self.s
-        if abs(l_speed)<0.01 and abs(r_speed)<0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
+        if abs(self.l_speed)<0.01 and abs(self.r_speed)<0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
             self.is_over = True
             #end the game!

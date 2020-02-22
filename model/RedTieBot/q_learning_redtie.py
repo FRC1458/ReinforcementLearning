@@ -286,7 +286,7 @@ if __name__ == '__main__':
         env.fast_mode = False
         
     graphics = input("Show graphics? (y or n): ")
-    if graphics == y:
+    if graphics == 'y':
         show = 'thousand'
     else:
         show = 'never'    
