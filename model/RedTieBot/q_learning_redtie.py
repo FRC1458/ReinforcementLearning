@@ -94,7 +94,6 @@ class Model:
     def stopGraphics(self):
         env.graphics = False
 
-        '''
         cx, cy, cfacing, cl_speed, cr_speed = observation
         a=self.env.reward_point()
         x, y, facing = self.get_target()
@@ -111,17 +110,19 @@ class Model:
                 return ([1,1])
 
     def check_turn(l_speed, r_speed):
+        l_speed = int(10*l_speed/3)
+        r_speed = int(10*r_speed/3)
         if l_speed == -1 and r_speed == 1:
                 return ([0,0])
         elif l_speed == 1 and r_speed == -1:
             return([0,0])
         elif l_speed == 0 and r_speed == 0:
             return ([1,-1])
-        elif l_speed == 1 and r_speed == 1:
-            return ([-1,-1])
-        elif l_speed == -1 and r_speed == -1:
-            0qAreturn ([1,1])
-        '''
+        elif abs(l_speed) >= 1:
+            l=-1*abs(l_speed)/l_speed
+        elif r_speed >= 1:
+            r=-1*abs(r_speed)/r_speed
+        return([l,r])
 
 def play_one(model,eps,gamma):
     observation=env.reset()
