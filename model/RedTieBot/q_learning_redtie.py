@@ -92,6 +92,22 @@ class Model:
 
     def stopGraphics(self):
         env.graphics = False
+        '''
+        cx, cy, cfacing, cl_speed, cr_speed = observation
+        a=self.env.reward_point()
+        x, y, facing = self.get_target()
+        if facing == np.arctan((cy-y)/(cx-x))*12/np.pi:
+            if l_speed == -1 and r_speed == 1:
+                return ([0,0])
+            elif l_speed == 1 and r_speed == -1:
+                return([0,0])
+            elif l_speed == 0 and r_speed == 0:
+                return ([1,-1])
+            elif l_speed == 1 and r_speed == 1:
+                return ([-1,-1])
+            elif l_speed == -1 and r_speed == -1:
+                return ([1,1])
+        '''
 
     def check_turn(l_speed, r_speed):
         l_speed = int(10*l_speed/3)
@@ -263,7 +279,8 @@ if __name__ == '__main__':
     N=10000
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
-    
+
+    '''
     #show = 'yes'
     show = 'no'
     env.fast_mode = True; show = 'no'
@@ -272,12 +289,11 @@ if __name__ == '__main__':
 
     fast = input("Fast mode? (y or n)")
     if fast == 'y':
-        show = 'yes'
-        env.fast_mode = False
-    else:
         show = 'no'
         env.fast_mode = True; show = 'no'
-    '''
+    else:
+        show = 'yes'
+        env.fast_mode = False
 
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
@@ -287,8 +303,8 @@ if __name__ == '__main__':
             if not env.fast_mode:
                 print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
                 print("total rewards:", totalrewards.sum())
-            if n%500==0:
-                print("500 more iterations have passed.")
+            if n%1000==0:
+                print("1000 episodes have passed")#, totalrewards[-1000:].mean())
                 if show == 'yes':
                     model.setGraphics()
                     env.clearAndDraw()
