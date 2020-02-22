@@ -90,23 +90,8 @@ class Model:
     def setGraphics(self):
         env.graphics = True
 
-    def stopGraphics(self, observation):
+    def stopGraphics(self):
         env.graphics = False
-
-        cx, cy, cfacing, cl_speed, cr_speed = observation
-        a=self.env.reward_point()
-        x, y, facing = self.get_target()
-        if facing == np.arctan((cy-y)/(cx-x))*12/np.pi:
-            if l_speed == -1 and r_speed == 1:
-                return ([0,0])
-            elif l_speed == 1 and r_speed == -1:
-                return([0,0])
-            elif l_speed == 0 and r_speed == 0:
-                return ([1,-1])
-            elif l_speed == 1 and r_speed == 1:
-                return ([-1,-1])
-            elif l_speed == -1 and r_speed == -1:
-                return ([1,1])
 
     def check_turn(l_speed, r_speed):
         l_speed = int(10*l_speed/3)
@@ -283,7 +268,7 @@ if __name__ == '__main__':
     show = 'no'
     env.fast_mode = True; show = 'no'
     #env.fast_mode = False
-'''
+    '''
 
     fast = input("Fast mode? (y or n)")
     if fast == 'y':
@@ -292,7 +277,7 @@ if __name__ == '__main__':
     else:
         show = 'no'
         env.fast_mode = True; show = 'no'
-'''
+    '''
 
     for n in range(N):
         eps=1.0/np.sqrt(n+1)
