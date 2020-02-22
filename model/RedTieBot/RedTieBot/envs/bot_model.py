@@ -24,8 +24,8 @@ class BotModel(gym.Env):
         self.s = 2
         #the scale of the graphics
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
-        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
-        self.a=self.reward_point()
+        self.maxShootDist = 40 #This is the MAXIMUM Distance away from the target
+        self.a, self.a_pos = self.reward_point()
         self.w=5
         #width of robot
         self.t=0.5
@@ -118,7 +118,7 @@ class BotModel(gym.Env):
             #self.trt.goto(self.x0*s, self.y0*s)
         self.counter += 1
         self.checkreward()
-        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
+        return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=np.around(self.l_speed,1), r_speed=np.around(self.r_speed))
 
     def checkreward(self):
         d0 = np.sqrt((58-self.x0)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y0)**2)
@@ -126,14 +126,23 @@ class BotModel(gym.Env):
         if self.is_over:
             self.reward += ((1/d)*100)-((1/d0)*100)
         s = self.s
-        if (int(self.x), int(self.y)) in self.a:
+        if abs(l_speed)<0.01 and abs(r_speed)<0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
             self.is_over = True
             #end the game!
             #print(20*'>' + 'Reached')
-            self.reward += 100
+            self.reward += 1000
+            print("Made it -3")
             #i get a lot of points
-            print('reward given!')
+        if ((int(self.x), int(self.y), int(self.facing)) in self.a):
+            self.reward += 500
+            #self.is_over = True
+            #print("Made it -2")
+        if ((int(self.x), int(self.y)) in self.a_pos):
+            self.reward += 100
+            #self.is_over = True
+            #print("Made it -1")
+
         x = self.x
         y = self.y
         t = 0
@@ -270,6 +279,7 @@ class BotModel(gym.Env):
     def reward_point(self):
         s = self.s
         a=[]
+        a_pos = []
         for x in range(81):
             for y in range(160):
                 if ((58 - x) ** 2 + (159 - y) ** 2 >= self.minShootDist ** 2 and (58 - x) ** 2 + (159 - y) ** 2 <= self.maxShootDist ** 2 and y <= x + 101 and y <= -x + 217):
@@ -282,7 +292,8 @@ class BotModel(gym.Env):
                     facing = int(facing*12/np.pi)
                     if facing > 2:
                         a.append((x,y,facing))
-        return a
+                        a_pos.append((x,y))
+        return a, a_pos
 
     def moving(self, x,y,facing,t):
         #this function calculates the robot's new point.
@@ -406,7 +417,7 @@ class BotModel(gym.Env):
             self.trt.goto(82.1*s, 72.3*s)
             self.trt.end_fill()
             #draw the east spinner
-
+            '''
             self.trt.penup()
             self.trt.goto(58*s, 159*s-(self.minShootDist*s))
             self.trt.begin_fill()
@@ -422,6 +433,14 @@ class BotModel(gym.Env):
             self.trt.right(90)
             self.trt.goto(58*s, 159*s-(self.minShootDist*s))
             self.trt.end_fill()
-            #draw the reward zone as a rectangle, ignoring the curved corners
-
+            #approximates reward zone quickly
+            '''
+            
+            self.trt.penup()
+            for i in self.a:
+                self.trt.pencolor('green')
+                self.trt.goto(i[0]*s,i[1]*s)
+                self.trt.pendown()
+            #shows the exact reward zone but takes a long time to draw
+            
             self.trt.pencolor('black')
