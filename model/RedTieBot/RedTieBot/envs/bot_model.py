@@ -243,15 +243,19 @@ class BotModel(gym.Env):
         if self.counter >0:
             T = True
             facing = np.random.randint(24)
+            #generates a direction for it to face in 15 degree increments 
             while T:
                 x = np.random.randint(82)
                 y = np.random.randint(159)
+                #generate a point for the robot to spawn in
                 if not self.fast_mode:
                     if not self.invalid_point(x,y):
                         return x,y,facing
+                #if the visuals are there, return the coordinates and direction of the robot so the robot knows what to do relative to it's coordinates
                 else:
                     if not self.invalid_point_fast(x,y):
                         return x,y,facing
+                #if the visuals are not there, also return the coordinates and direction of the robot so the robot knows what to do relative to it's coordinates
         else:
             return self.a[np.random.choice(len(self.a))]
 
