@@ -405,20 +405,19 @@ class BotModel(gym.Env):
             #draw the east spinner
 
             self.trt.penup()
-            self.trt.goto(61.5*s, 155.5*s)
-            self.trt.pendown()
+            self.trt.goto(58*s, 159*s-(self.minShootDist*s))
             self.trt.begin_fill()
-            self.trt.goto(65.1*s, 151.9*s)
-            self.trt.setheading(225)
-            for i in range(90):
-                self.trt.right(1)
-                self.trt.forward(3.14/20*s)
-            self.trt.setheading(45)
-            self.trt.goto(54.5*s, 155.5*s)
-            self.trt.setheading(315)
-            for i in range(90):
-                self.trt.left(1)
-                self.trt.forward(3.14/20*s)
+            self.trt.pendown()
+            self.trt.setheading(0)
+            self.trt.forward(7.1*s)
+            self.trt.right(90)
+            self.trt.forward(self.maxShootDist*s-self.minShootDist*s)
+            self.trt.right(90)
+            self.trt.forward(7.1*2*s)
+            self.trt.right(90)
+            self.trt.forward(self.maxShootDist*s-self.minShootDist*s)
+            self.trt.right(90)
+            self.trt.goto(58*s, 159*s-(self.minShootDist*s))
             self.trt.end_fill()
 
             self.trt.pencolor('black')
