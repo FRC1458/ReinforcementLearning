@@ -93,7 +93,8 @@ class BotModel(gym.Env):
         episode_over = self.is_over
         #checks to see if it's over.
         info = dict()
-        self.render()
+        if self.counter%1000 == 0:
+            self.render()
         #openai needs that line to be happy. means nothing
         return ob, self.reward, episode_over, info
         #spit back all that data.
@@ -114,7 +115,7 @@ class BotModel(gym.Env):
         self.is_over = False
         if self.graphics:
             self.trt.penup()
-            self.trt.goto(self.x0*s, self.y0*s)
+            #self.trt.goto(self.x0*s, self.y0*s)
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=self.l_speed, r_speed=self.r_speed)
@@ -125,15 +126,14 @@ class BotModel(gym.Env):
         if self.is_over:
             self.reward += ((1/d)*100)-((1/d0)*100)
         s = self.s
-        if abs(self.l_speed) <= 0.01 and abs(self.r_speed) <= 0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
+        if (int(self.x), int(self.y)) in self.a:
         #If I'm in position in front of the goal and facing the right way,
             self.is_over = True
             #end the game!
             #print(20*'>' + 'Reached')
             self.reward += 100
             #i get a lot of points
-            if not self.fast_mode:
-                print('reward given!')
+            print('reward given!')
         x = self.x
         y = self.y
         t = 0
@@ -237,9 +237,9 @@ class BotModel(gym.Env):
         s = self.s
         if self.graphics == True:
             self.trt.width(1)
-            self.trt.pendown()
             self.trt.setheading(self.facing*15)
             self.trt.goto(self.x*s, self.y*s)
+            self.trt.pendown()
             #these few lines just turn the turtle as needed and go to the new point. Accounts for the scalar.
 
     def generate_point(self):
@@ -314,13 +314,14 @@ class BotModel(gym.Env):
         return x, y, facing*12/np.pi
         
     def close(self):
-        #self.trt.bye()
-        pass
+        self.trt.bye()
+
+    def start(self):
+        self.trt = turtle.Turtle()
 
     def clearAndDraw(self):
         s = self.s
         if self.graphics:
-            self.trt = turtle.Turtle()
             self.trt.shape('arrow')
             self.trt.speed(0)
             self.trt.clear()
@@ -421,5 +422,6 @@ class BotModel(gym.Env):
             self.trt.right(90)
             self.trt.goto(58*s, 159*s-(self.minShootDist*s))
             self.trt.end_fill()
+            #draw the reward zone as a rectangle, ignoring the curved corners
 
             self.trt.pencolor('black')

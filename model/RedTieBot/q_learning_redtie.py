@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 import RedTieBot
-import time
+#from ttictoc import TicToc
 
 def build_state(features):
     return int("".join(map(lambda feature: str(int(feature)), features)))
@@ -281,10 +281,10 @@ if __name__ == '__main__':
     import pdb; pdb.set_trace()
 
 
-    show = 'yes'
-    #show = 'no'
-    #env.fast_mode = True; show = 'no'
-    env.fast_mode = False
+    #show = 'never'
+    show = 'thousand'
+    env.fast_mode = True
+    #env.fast_mode = False
 
     '''
     fast = input("Fast mode? (y or n)")
@@ -305,12 +305,15 @@ if __name__ == '__main__':
                 print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
                 print("total rewards:", totalrewards.sum())
             if n%1000==0:
-                print("1000 episodes have passed")#, totalrewards[-1000:].mean())
-                if show == 'yes':
+                print("1000 episodes have passed")
+
+                if show == 'thousand':
                     model.setGraphics()
-                    env.clearAndDraw()
-                if show == 'no':
-                    model.stopGraphics()
+                    if n == 0:
+                        env.start()
+                        env.clearAndDraw()
+                
+                
                 '''
                 word = input("show graphics? (y/n)")
                 if word == 'y':
