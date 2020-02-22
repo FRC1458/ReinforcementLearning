@@ -279,10 +279,10 @@ if __name__ == '__main__':
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
     
-    show = 'yes'
-    #show = 'no'
-    #env.fast_mode = True; show = 'no'
-    env.fast_mode = False
+    #show = 'yes'
+    show = 'no'
+    env.fast_mode = True; show = 'no'
+    #env.fast_mode = False
 
     for n in range(N):
         eps=1.0/np.sqrt(n+1)

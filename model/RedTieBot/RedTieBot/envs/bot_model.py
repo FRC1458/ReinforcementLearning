@@ -317,9 +317,8 @@ class BotModel(gym.Env):
         s = self.s
         if self.graphics:
             self.trt = turtle.Turtle()
-            self.trt.shape('square')
+            self.trt.shape('arrow')
             self.trt.speed(0)
-            
             self.trt.clear()
             self.trt.penup()
             self.trt.pencolor('red')
@@ -402,5 +401,22 @@ class BotModel(gym.Env):
             self.trt.goto(82.1*s, 72.3*s)
             self.trt.end_fill()
             #draw the east spinner
+
+            self.trt.penup()
+            self.trt.goto(61.5*s, 155.5*s)
+            self.trt.pendown()
+            self.trt.begin_fill()
+            self.trt.goto(65.1*s, 151.9*s)
+            self.trt.setheading(225)
+            for i in range(90):
+                self.trt.right(1)
+                self.trt.forward(3.14/20*s)
+            self.trt.setheading(45)
+            self.trt.goto(54.5*s, 155.5*s)
+            self.trt.setheading(315)
+            for i in range(90):
+                self.trt.left(1)
+                self.trt.forward(3.14/20*s)
+            self.trt.end_fill()
 
             self.trt.pencolor('black')
