@@ -291,32 +291,40 @@ if __name__ == '__main__':
         monitor_dir = './' + filename + '_' + str(datetime.now())
         env = wrappers.Monitor(env, monitor_dir)
 
-    N=10000
+    N=100
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
 
-    #show = 'never'
-    #show = 'thousand'
-
-    #env.fast_mode = True
+    #show = 'never'; env.graphics = False; env.show = 'never'
+    #show = 'thousand'; env.graphics = True; env.show = 'thousand'
+    show = 'last'; env.graphics = False; env.show = 'last'
+    env.fast_mode = True
     #env.fast_mode = False
-
+    '''
     fast = input("Fast mode? (y or n): ")
     if fast == 'y':
         env.fast_mode = True
     else:
         env.fast_mode = False
-        
+    
     graphics = input("Show graphics? (y or n): ")
     if graphics == 'y':
         show = 'thousand'
     else:
         show = 'never'    
-
+    '''
     for n in range(N):
+        if show == 'last' and n == N-1:
+            env.graphics = True
+            model.setGraphics()
+            env.start()
+            env.clearAndDraw()
+
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
+
+
         if n%100==0:
             if not env.fast_mode:
                 print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
@@ -330,7 +338,7 @@ if __name__ == '__main__':
                         env.start()
                         env.clearAndDraw()
                 
-                
+
                 '''
                 word = input("show graphics? (y/n)")
                 if word == 'y':

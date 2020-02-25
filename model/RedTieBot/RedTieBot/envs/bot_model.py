@@ -20,7 +20,6 @@ class ActionSpace:
 
 class BotModel(gym.Env):
     def __init__(self):
-        self.graphics = False
         self.s = 2
         #the scale of the graphics
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
@@ -93,9 +92,10 @@ class BotModel(gym.Env):
         episode_over = self.is_over
         #checks to see if it's over.
         info = dict()
-        if self.counter%1000 == 0:
+        if (self.counter%1000 == 0) and (self.show == 'thousand'):
             self.render()
-        #openai needs that line to be happy. means nothing
+        elif self.show == 'last':
+            self.render()
         return ob, self.reward, episode_over, info
         #spit back all that data.
 
@@ -115,7 +115,7 @@ class BotModel(gym.Env):
         self.is_over = False
         if self.graphics:
             self.trt.penup()
-            #self.trt.goto(self.x0*s, self.y0*s)
+            self.trt.goto(self.x0*s, self.y0*s)
         self.counter += 1
         self.checkreward()
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=np.around(self.l_speed,1), r_speed=np.around(self.r_speed))
@@ -436,12 +436,13 @@ class BotModel(gym.Env):
             self.trt.end_fill()
             #approximates reward zone quickly
             '''
-            
+            '''
             self.trt.penup()
             for i in self.a:
                 self.trt.pencolor('green')
                 self.trt.goto(i[0]*s,i[1]*s)
                 self.trt.pendown()
             #shows the exact reward zone but takes a long time to draw
+            '''
             
             self.trt.pencolor('black')
