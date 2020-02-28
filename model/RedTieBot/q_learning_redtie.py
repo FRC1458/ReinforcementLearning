@@ -41,6 +41,7 @@ class FeatureTransformer:
 class Model:
     def __init__(self, env, feature_transformer):
         self.env = env
+        self.try_model = gym.make('redtiebot-v0')
         self.feature_transformer = feature_transformer
 
         self.num_states = 82*160*24#10**env.observation_space.shape[0]
@@ -49,18 +50,22 @@ class Model:
         self.load()
         self.counter = 0
         self.sm = {'not facing': self.rotate,
-                   'facing': self.move,
+                   'facing': self.move2,
                    'reached': self.rotate}
         self.state = 'not facing'
+        self.spun = False
+        self.angle = None
+        self.g_angle = None
 
     def reset(self):
         self.counter = 0
         self.target = None
         self.state = 'not facing'
+        self.spun = False
 
-    def get_target(self):
+    def get_target(self,x,y):
         if self.target is None:
-            self.target = self.env.get_a_target
+            self.target = self.env.get_a_target(x,y)
         return self.target
 
     def save(self):
@@ -76,15 +81,16 @@ class Model:
         x=self.feature_transformer.transform(s)
         return self.Q[int(x)]
 
-    def update(self,s,a,G):
+    def update(self,s,aa,G):
+        a = self.env.action_space.get_idx(aa)
         x=self.feature_transformer.transform(s)
         #print("update: ", str(x), str(a))
         self.Q[x,a] += 10e-3*(G-self.Q[x,a])
 
     def sample_action(self,s,eps):
         self.counter += 1
-        #if self.counter < 2000:
-            #return self.calculated_path(s)
+        if self.counter < 2000:
+            return self.calculated_path(s)
         if np.random.random() < eps:
             #print('random')
             return self.env.action_space.sample()
@@ -93,51 +99,119 @@ class Model:
             #print('prob: {}'.format(p))
             return self.env.action_space.fromQ(np.argmax(p))
         
-    def setGraphics(self):
+    def setGraphics(self, num):
+        env.num_graph = num
         env.graphics = True
 
     def stopGraphics(self):
         env.graphics = False
 
-    def calculated_path(observation):
-        a=self.env.reward_point()
-        self.sm[self.state](observation)  
+    def calculated_path(self,observation):
+        return self.sm[self.state](observation)  
         
-    def rotate(observation):
-        cx, cy, cfacing, l_speed, r_speed = observation
-        x, y, facing = self.get_target()
+    def rotate(self,observation):
+        cx, cy, cfacing, l_speed, r_speed = observation.values()
+        x, y, facing = self.get_target(cx,cy)
+        action = [1,-1]
         if self.angle is None:
-            if self.state == 'not_facing':
+            if self.state == 'not facing':
                 if cx != x:
-                    self.angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
+                    if cx - x < 0:
+                        self.angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
+                    else:
+                        self.angle = int((np.arctan(((cy-y)/(cx-x))+np.pi))*12/np.pi)
                     if self.angle < 0:
                         self.angle += 24
                 else:
                     self.angle = 6
             else:
-                self.state = facing
-        if self.angle != cfacing:
-            l_speed = int(10*l_speed/3)
-            r_speed = int(10*r_speed/3)
-            if l_speed == -1 and r_speed == 1:
-                return ([0,0])
-            elif l_speed == 1 and r_speed == -1:
-                return([0,0])
-            elif l_speed == 0 and r_speed == 0:
-                return ([1,-1])
-            elif abs(l_speed) >= 1:
-                l=-1*abs(l_speed)/l_speed
-            elif r_speed >= 1:
-                r=-1*abs(r_speed)/r_speed
-            return([l,r])
+                self.angle = facing
+            #print(self.angle)
+        if np.round(l_speed,2) == 0 and np.round(r_speed,2) > 0:
+            action = ([0,-1])
+        elif np.round(r_speed,2) == 0 and np.round(l_speed,2) > 0:
+            action = ([-1,0])
+        elif self.angle != cfacing:
+            if l_speed * r_speed < 0:
+                action = ([0,0])
+            else:
+                action = ([-1,1])
         else:
-            self.angle = None
-            self.state = 'facing'
+            if self.state == 'not facing':
+                self.state = 'facing'
+                self.g_angle = self.angle
+            self.angle = None    
+        return action
 
-    def move(observation):
-        cx, cy, cfacing, l_speed, r_speed = observation
-        x, y, facing = self.get_target()
-        dist = np.sqrt((cx-x)**2 + (cy-y)**2)
+    def move(self,observation):
+        cx, cy, cfacing, l_speed, r_speed = observation.values()
+        x, y, facing = self.get_target(cx,cy)
+        last_dist = dist = (cx-x)**2 + (cy-y)**2
+        if self.angle is None:
+            mn = []
+            for m in range(1,6):
+                n = 0
+                reached = False
+                while not reached and n < 100:
+                    self.set_my_model()
+                    r = self.try_model.step2(m, n)
+                    n += 1
+                    if (r[0]['x'], r[0]['y']) == (x, y):
+                        reached = True
+                        mn.append((m,n))
+                    d = (r[0]['x']-x)**2 + (r[0]['y']-y)**2
+                    if last_dist < d:
+                        reached = True
+            if mn ==[]:
+                mn = [1,20]
+            else:
+                mn = max(mn, key=lambda p: p[0])
+            self.angle = list(([1,1],)*mn[0] + ([0,0],)*mn[1] + ([-1, -1],)*mn[0])
+            #print(self.angle)
+        r = self.angle.pop(0)
+        if not self.angle:
+            self.angle = None
+            if (x, y) == (cx, cy):
+                self.state = 'reached'
+            else:
+                self.state = 'not facing'
+        return r
+
+    def move2(self,observation):
+        cx, cy, cfacing, l_speed, r_speed = observation.values()
+        x, y, facing = self.get_target(cx,cy)
+        if cfacing >= 18:
+            cfacing -= 24
+        action = ([0,0])
+        if cx != x:
+            if cx - x < 0:
+                self.g_angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
+            else:
+                self.g_angle = int((np.arctan(((cy-y)/(cx-x))+np.pi))*12/np.pi)
+        else:
+            self.g_angle = 6
+        #print(cfacing, self.g_angle)
+        if (x, y) == (cx, cy):
+            action = ([-1,-1])
+            self.state = 'reached'
+        if abs(l_speed * r_speed) <= 0.001:
+            action = ([1,1])
+        elif np.round(l_speed,2) > np.round(r_speed,2):
+            action = ([-1,0])
+        elif np.round(l_speed,2) < np.round(r_speed,2):
+            action = ([0,-1])
+        elif self.g_angle > cfacing:
+            action = ([0,1])
+        elif self.g_angle < cfacing:
+            action = ([1,0])
+        return action
+            
+    def set_my_model(self):
+        self.try_model.x = self.env.x
+        self.try_model.y = self.env.y
+        self.try_model.facing = self.env.facing
+        self.try_model.l_speed = self.env.l_speed
+        self.try_model.r_speed = self.env.r_speed
 
 def play_one(model,eps,gamma):
     observation=env.reset()
@@ -310,6 +384,10 @@ if __name__ == '__main__':
     graphics = input("Show graphics? (y or n): ")
     if graphics == 'y':
         show = 'thousand'
+        num_g = 1000
+    elif graphics == 'a':
+        show = 'thousand'
+        num_g = 1
     else:
         show = 'never'    
     '''
@@ -333,7 +411,7 @@ if __name__ == '__main__':
                 print("1000 episodes have passed")
 
                 if show == 'thousand':
-                    model.setGraphics()
+                    model.setGraphics(num_g)
                     if n == 0:
                         env.start()
                         env.clearAndDraw()

@@ -11,11 +11,15 @@ class ActionSpace:
         self._spaces = np.array([(-1,-1), (-1,0), (-1,1), (0,-1),
                                 (0,0), (0,1), (1,-1), (1,0), (1,1)])
 
+    def get_idx(self, a):
+        return np.where((self._spaces[:,0] == a[0]) & (self._spaces[:,1] == a[1]))[0][0]
+        
+        
     def sample(self):
         return self._spaces[np.random.choice(len(self._spaces))]
 
     def fromQ(self, val):
-       # print(val)
+        # print(val)
         return self._spaces[np.digitize(val, np.linspace(-1.0, 1.0, len(self._spaces))) - 1]
 
 class BotModel(gym.Env):
@@ -23,7 +27,7 @@ class BotModel(gym.Env):
         self.s = 2
         #the scale of the graphics
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
-        self.maxShootDist = 40 #This is the MAXIMUM Distance away from the target
+        self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a, self.a_pos = self.reward_point()
         self.w=5
         #width of robot
@@ -54,6 +58,7 @@ class BotModel(gym.Env):
         #The range of speeds that the wheel can have.
         self.path = []
         self.fast_mode = 0
+        self.num_graph = 1000
 
     def step2(self, m, n):
         for i in range(m):
@@ -92,9 +97,8 @@ class BotModel(gym.Env):
         episode_over = self.is_over
         #checks to see if it's over.
         info = dict()
-        if (self.counter%1000 == 0) and (self.show == 'thousand'):
-            self.render()
-        elif self.show == 'last':
+
+        if self.counter % self.num_graph == 0:
             self.render()
         return ob, self.reward, episode_over, info
         #spit back all that data.
@@ -134,6 +138,7 @@ class BotModel(gym.Env):
             self.reward += 1000
             print("Made it -3")
             #i get a lot of points
+        '''
         if ((int(self.x), int(self.y), int(self.facing)) in self.a):
             self.reward += 500
             #self.is_over = True
@@ -142,7 +147,7 @@ class BotModel(gym.Env):
             self.reward += 100
             #self.is_over = True
             #print("Made it -1")
-            
+        ''' 
         if not self.is_over:
             x = self.x
             y = self.y
@@ -273,19 +278,21 @@ class BotModel(gym.Env):
         else:
             return self.a[np.random.choice(len(self.a))]
 
-    def get_a_target(self):
+    def get_a_target(self,x,y):
         s = self.s
+        if (x,y) in self.a_pos:
+            return x, y, self.a_pos[(x,y)]
         return self.a[np.random.choice(len(self.a))]
 
     def reward_point(self):
         s = self.s
         a=[]
-        a_pos = []
+        a_pos = {}
         for x in range(81):
             for y in range(160):
                 if ((58 - x) ** 2 + (159 - y) ** 2 >= self.minShootDist ** 2 and (58 - x) ** 2 + (159 - y) ** 2 <= self.maxShootDist ** 2 and y <= x + 101 and y <= -x + 217):
                     if x != 58:
-                        facing=np.arctan((58-x)/(158-y))+np.pi/2
+                        facing=np.arctan((159-y)/(58-x))
                     else:
                         facing=np.pi/2
                     if facing<0:
@@ -293,7 +300,7 @@ class BotModel(gym.Env):
                     facing = int(facing*12/np.pi)
                     if facing > 2:
                         a.append((x,y,facing))
-                        a_pos.append((x,y))
+                        a_pos[(x,y)] = facing
         return a, a_pos
 
     def moving(self, x,y,facing,t):
