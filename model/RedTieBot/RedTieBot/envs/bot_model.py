@@ -59,6 +59,8 @@ class BotModel(gym.Env):
         self.path = []
         self.fast_mode = 0
         self.num_graph = 1000
+        self.graphics = True
+        self.trt = turtle.Turtle()
 
     def step2(self, m, n):
         for i in range(m):

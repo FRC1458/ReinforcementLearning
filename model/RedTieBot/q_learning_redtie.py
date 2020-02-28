@@ -368,7 +368,7 @@ if __name__ == '__main__':
     N=100
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
-
+    '''
     #show = 'never'; env.graphics = False; env.show = 'never'
     #show = 'thousand'; env.graphics = True; env.show = 'thousand'
     show = 'last'; env.graphics = False; env.show = 'last'
@@ -388,9 +388,12 @@ if __name__ == '__main__':
     elif graphics == 'a':
         show = 'thousand'
         num_g = 1
+    elif graphics == 'l':
+        show = 'last'
+        num_g = 1000
     else:
         show = 'never'    
-    '''
+    
     for n in range(N):
         if show == 'last' and n == N-1:
             env.graphics = True
@@ -415,16 +418,6 @@ if __name__ == '__main__':
                     if n == 0:
                         env.start()
                         env.clearAndDraw()
-                
-
-                '''
-                word = input("show graphics? (y/n)")
-                if word == 'y':
-                    model.setGraphics()
-                    env.clearAndDraw()
-                if word == 'n' :
-                    model.stopGraphics()
-                '''
 
     #plt.plot(totalrewards)
     #plt.title("Rewards")
