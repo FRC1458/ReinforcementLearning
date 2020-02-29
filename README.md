@@ -29,4 +29,12 @@ Macintosh -
 7) You will recieve a series of questions, answer them according to how you want the simulation to run (fastmode reduces the amount of print statements, and show graphics shows you every move of the robot in the turtle graphics window)
 8) Now the program should run, feel free to edit the code in the q_learning_redtie.py and bot_model.py (ask us before you push)
 
+Fast Mode: It gets rid of most the print statements. This can be used to run many iterations in a reasonable amount of time, like 1000+.
+
+Graphics: If you would like to see the robi
+
+
+
 If you have any questions, ask on our Slack!
+
+
