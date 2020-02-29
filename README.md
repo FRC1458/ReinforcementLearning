@@ -12,11 +12,14 @@ Windows -
 1) Press the "clone or download" button in this repository and copy the https link
 2) Open up Git Bash (if you don't have it search up Git bash and download it) and type 'git clone LINK' (paste the link by right clicking and pressing paste)
 3) Download Anaconda Python (search it up)
-4) Open the anaconda prompt, type cd Reinforcementlearning, then cd model, cd redtiebot, and lastly type ipython setup.py
-5) Type ipython q_learning_redtie.py in the anaconda prompt and the program should start running
-6) You will see "(Pbd)" appear in the anaconda prompt, type c to continue
-7) You will recieve a series of questions, answer them according to how you want the simulation to run (fastmode reduces the amount of print statements, and show graphics shows you every move of the robot in the turtle graphics window)
-8) Now the program should run, feel free to edit the code in the q_learning_redtie.py and bot_model.py (ask us before you push)
+4) You will need to install the following libraries (using 'pip install LIBRARY'):
+ - gym
+ - numpy
+5) Open the anaconda prompt, type cd Reinforcementlearning, then cd model, cd redtiebot, and lastly type ipython setup.py
+6) Type ipython q_learning_redtie.py in the anaconda prompt and the program should start running
+7) You will see "(Pbd)" appear in the anaconda prompt, type c to continue
+8) You will recieve a series of questions, answer them according to how you want the simulation to run (fastmode reduces the amount of print statements, and show graphics shows you every move of the robot in the turtle graphics window)
+9) Now the program should run, feel free to edit the code in the q_learning_redtie.py and bot_model.py (ask us before you push)
 
 Macintosh - 
 1) Press the "clone or download" button in this repository and copy the https link
@@ -31,7 +34,7 @@ Macintosh -
 
 Fast Mode: It gets rid of most the print statements. This can be used to run many iterations in a reasonable amount of time, like 1000+.
 
-Graphics: If you would like to see the robots actual path during 1 single iteration, when you are asked "Show graphics? (y or n):" respond with "a".
+Graphics: If you would like to see the robi
 
 
 
