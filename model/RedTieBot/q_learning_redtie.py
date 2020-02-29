@@ -66,7 +66,6 @@ class Model:
     def get_target(self,x,y):
         if self.target is None:
             self.target = self.env.get_a_target(x,y)
-            print(self.target)
         return self.target
 
     def save(self):
