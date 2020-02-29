@@ -16,3 +16,4 @@ Windows -
 5) Type ipython q_learning_redtie.py in the anaconda prompt and the program should start running
 6) You will see "(Pbd)" appear in the anaconda prompt, type c to continue
 7) You will recieve a series of questions, answer them according to how you want the simulation to run (fastmode reduces the amount of print statements, and show graphics shows you every move of the robot in the turtle graphics window)
+8) Now the program should run, feel free to edit the code in the q_learning_redtie.py and bot_model.py (ask us before you push)
