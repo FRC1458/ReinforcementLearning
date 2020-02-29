@@ -31,7 +31,7 @@ Macintosh -
 
 Fast Mode: It gets rid of most the print statements. This can be used to run many iterations in a reasonable amount of time, like 1000+.
 
-Graphics: If you would like to see the robi
+Graphics: If you would like to see the robots actual path during 1 single iteration, when you are asked "Show graphics? (y or n):" respond with "a".
 
 
 
