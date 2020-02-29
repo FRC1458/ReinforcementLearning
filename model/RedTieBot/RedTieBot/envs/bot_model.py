@@ -119,7 +119,6 @@ class BotModel(gym.Env):
         self.reward = 0
         #reset the reward value
         self.is_over = False
-        #the game isn't over yet
         if self.graphics:
             self.trt.penup()
             self.trt.goto(self.x0*s, self.y0*s)
@@ -148,15 +147,8 @@ class BotModel(gym.Env):
             y = self.y
             t = 0
             facing = self.facing
-            N = 10
+            N = 5
             
-            x, y, facing = self.moving(x,y,facing,t)
-            if self.invalid_point(x, y):
-                self.reward -= 100
-                self.is_over = True
-            #Above will be commented out
-            
-            '''
             for check in range(N):
                 t+=self.t/N
                 x, y, facing = self.moving(x,y,facing,t)
@@ -168,7 +160,7 @@ class BotModel(gym.Env):
                     if self.invalid_point(x, y):
                         self.reward -= 100
                         self.is_over = True
-            '''
+            
 
     def invalid_point(self, x, y):
         if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
@@ -293,12 +285,12 @@ class BotModel(gym.Env):
         a=[]
         a_pos = {}
         for x in range(81):
-        #in range of x values of the arena
             for y in range(160):
-            #in range of y values of the arena
                 if ((58 - x) ** 2 + (159 - y) ** 2 >= self.minShootDist ** 2 and (58 - x) ** 2 + (159 - y) ** 2 <= self.maxShootDist ** 2 and y <= x + 101 and y <= -x + 217):
                     if x != 58:
                         facing=np.arctan((159-y)/(58-x))
+                        if x >=59:
+                            facing -=12
                     else:
                         facing=np.pi/2
                     if facing<0:
@@ -307,6 +299,7 @@ class BotModel(gym.Env):
                     if facing > 2:
                         a.append((x,y,facing))
                         a_pos[(x,y)] = facing
+        print(a)
         return a, a_pos
 
     def moving(self, x,y,facing,t):
@@ -340,11 +333,9 @@ class BotModel(gym.Env):
         
     def close(self):
         self.trt.bye()
-        #close turtle
 
     def start(self):
         self.trt = turtle.Turtle()
-        #open turtle
 
     def clearAndDraw(self):
         s = self.s

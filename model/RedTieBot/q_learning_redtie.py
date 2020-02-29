@@ -43,7 +43,7 @@ class Model:
         self.env = env
         self.try_model = gym.make('redtiebot-v0')
         self.feature_transformer = feature_transformer
-
+        self.our_tan = self.calctan()
         self.num_states = 82*160*24#10**env.observation_space.shape[0]
         ############
         self.num_actions = 9
@@ -56,6 +56,12 @@ class Model:
         self.spun = False
         self.angle = None
         self.g_angle = None
+
+    def calctan(self):
+        tano = []
+        for x in range(24):
+            tano.append(np.tan((.5+x)*np.pi/12))
+        return tano
 
     def reset(self):
         self.counter = 0
@@ -198,7 +204,7 @@ class Model:
         else:
             self.g_angle = 6
         '''
-        goal = ((y-cy)/(np.tan(cfacing*np.pi/12))+cx)
+        goal = ((y-cy)/(self.our_tan[cfacing])+cx)
         #print(cfacing, self.g_angle)
         if (x, y) == (cx, cy):
             action = ([-1,-1])
@@ -390,13 +396,13 @@ if __name__ == '__main__':
     env.fast_mode = True
     #env.fast_mode = False
     '''
-    fast = input("Fast mode? It gets rid of most the print statements. This can be used to run many iterations in a reasonable amount of time, like 1000+.(y or n): ")
+    fast = input("Fast mode? (y or n): ")
     if fast == 'y':
         env.fast_mode = True
     else:
         env.fast_mode = False
     
-    graphics = input("Show graphics? Respond with 'a' if you want to see how the robot moves in every iteration.(y or n): ")
+    graphics = input("Show graphics? (y or n): ")
     if graphics == 'y':
         show = 'thousand'
         num_g = 1000
