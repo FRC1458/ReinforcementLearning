@@ -448,13 +448,13 @@ class BotModel(gym.Env):
             self.trt.end_fill()
             #approximates reward zone quickly
             '''
-            '''
+            
             self.trt.penup()
             for i in self.a:
                 self.trt.pencolor('green')
                 self.trt.goto(i[0]*s,i[1]*s)
                 self.trt.pendown()
             #shows the exact reward zone but takes a long time to draw
-            '''
+            
             
             self.trt.pencolor('black')

@@ -66,6 +66,7 @@ class Model:
     def get_target(self,x,y):
         if self.target is None:
             self.target = self.env.get_a_target(x,y)
+            print(self.target)
         return self.target
 
     def save(self):
@@ -119,7 +120,8 @@ class Model:
                     if cx - x < 0:
                         self.angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
                     else:
-                        self.angle = int((np.arctan(((cy-y)/(cx-x))+np.pi))*12/np.pi)
+                        self.angle = int((np.arctan(((cy-y)/(cx-x))))*12/np.pi)
+                        self.angle += 12
                     if self.angle < 0:
                         self.angle += 24
                 else:
@@ -188,6 +190,7 @@ class Model:
                 self.g_angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
             else:
                 self.g_angle = int((np.arctan(((cy-y)/(cx-x))+np.pi))*12/np.pi)
+                self.g_angle += 12
         else:
             self.g_angle = 6
         #print(cfacing, self.g_angle)
