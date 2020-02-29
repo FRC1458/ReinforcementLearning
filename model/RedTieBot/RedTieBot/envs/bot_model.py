@@ -119,6 +119,7 @@ class BotModel(gym.Env):
         self.reward = 0
         #reset the reward value
         self.is_over = False
+        #the game isn't over yet
         if self.graphics:
             self.trt.penup()
             self.trt.goto(self.x0*s, self.y0*s)
@@ -292,7 +293,9 @@ class BotModel(gym.Env):
         a=[]
         a_pos = {}
         for x in range(81):
+        #in range of x values of the arena
             for y in range(160):
+            #in range of y values of the arena
                 if ((58 - x) ** 2 + (159 - y) ** 2 >= self.minShootDist ** 2 and (58 - x) ** 2 + (159 - y) ** 2 <= self.maxShootDist ** 2 and y <= x + 101 and y <= -x + 217):
                     if x != 58:
                         facing=np.arctan((159-y)/(58-x))
@@ -337,9 +340,11 @@ class BotModel(gym.Env):
         
     def close(self):
         self.trt.bye()
+        #close turtle
 
     def start(self):
         self.trt = turtle.Turtle()
+        #open turtle
 
     def clearAndDraw(self):
         s = self.s
