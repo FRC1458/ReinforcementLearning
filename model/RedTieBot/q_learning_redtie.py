@@ -379,13 +379,13 @@ if __name__ == '__main__':
     env.fast_mode = True
     #env.fast_mode = False
     '''
-    fast = input("Fast mode? (y or n): ")
+    fast = input("Fast mode? It gets rid of most the print statements. This can be used to run many iterations in a reasonable amount of time, like 1000+.(y or n): ")
     if fast == 'y':
         env.fast_mode = True
     else:
         env.fast_mode = False
     
-    graphics = input("Show graphics? (y or n): ")
+    graphics = input("Show graphics? Respond with 'a' if you want to see how the robot moves in every iteration.(y or n): ")
     if graphics == 'y':
         show = 'thousand'
         num_g = 1000
