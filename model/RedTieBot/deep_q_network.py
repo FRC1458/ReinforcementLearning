@@ -182,7 +182,7 @@ def play_one(env, model, tmodel, eps, gamma, copy_period):
 
 
 def main():
-  env = gym.make('CartPole-v0')
+  env = gym.make('redtiebot-v0')
   gamma = 0.99
   copy_period = 50
 
