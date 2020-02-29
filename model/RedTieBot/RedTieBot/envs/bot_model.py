@@ -300,9 +300,12 @@ class BotModel(gym.Env):
                     if facing<0:
                         facing+=np.pi*2
                     facing = int(facing*12/np.pi)
+                    if x >= 59:
+                    	facing -= 12
                     if facing > 2:
                         a.append((x,y,facing))
                         a_pos[(x,y)] = facing
+        print(a)
         return a, a_pos
 
     def moving(self, x,y,facing,t):
