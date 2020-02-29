@@ -127,10 +127,12 @@ class BotModel(gym.Env):
         return dict(x=int(self.x), y=int(self.y), facing=int(self.facing), l_speed=np.around(self.l_speed,1), r_speed=np.around(self.r_speed))
 
     def checkreward(self):
+        '''
         d0 = np.sqrt((58-self.x0)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y0)**2)
         d = np.sqrt((58-self.x)**2+(((self.maxShootDist + self.minShootDist)/2)-self.y)**2)
         if self.is_over:
             self.reward += ((1/d)*100)-((1/d0)*100)
+        '''
         s = self.s
         if abs(self.l_speed)<0.01 and abs(self.r_speed)<0.01 and ((int(self.x), int(self.y), int(self.facing)) in self.a):
         #If I'm in position in front of the goal and facing the right way,
@@ -140,22 +142,20 @@ class BotModel(gym.Env):
             self.reward += 1000
             print("Made it -3")
             #i get a lot of points
-        '''
-        if ((int(self.x), int(self.y), int(self.facing)) in self.a):
-            self.reward += 500
-            #self.is_over = True
-            #print("Made it -2")
-        if ((int(self.x), int(self.y)) in self.a_pos):
-            self.reward += 100
-            #self.is_over = True
-            #print("Made it -1")
-        ''' 
         if not self.is_over:
             x = self.x
             y = self.y
             t = 0
             facing = self.facing
             N = 10
+            
+            x, y, facing = self.moving(x,y,facing,t)
+            if self.invalid_point(x, y):
+                self.reward -= 100
+                self.is_over = True
+            #Above will be commented out
+            
+            '''
             for check in range(N):
                 t+=self.t/N
                 x, y, facing = self.moving(x,y,facing,t)
@@ -167,6 +167,7 @@ class BotModel(gym.Env):
                     if self.invalid_point(x, y):
                         self.reward -= 100
                         self.is_over = True
+            '''
 
     def invalid_point(self, x, y):
         if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
@@ -300,12 +301,9 @@ class BotModel(gym.Env):
                     if facing<0:
                         facing+=np.pi*2
                     facing = int(facing*12/np.pi)
-                    if x >= 59:
-                    	facing -= 12
                     if facing > 2:
                         a.append((x,y,facing))
                         a_pos[(x,y)] = facing
-        print(a)
         return a, a_pos
 
     def moving(self, x,y,facing,t):

@@ -186,11 +186,13 @@ class Model:
             cfacing -= 24
         action = ([0,0])
         if cx != x:
+            
             if cx - x < 0:
                 self.g_angle = int(np.arctan((cy-y)/(cx-x))*12/np.pi)
             else:
                 self.g_angle = int((np.arctan(((cy-y)/(cx-x))+np.pi))*12/np.pi)
                 self.g_angle += 12
+            
         else:
             self.g_angle = 6
         #print(cfacing, self.g_angle)
