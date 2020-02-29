@@ -181,9 +181,12 @@ class Model:
     def move2(self,observation):
         cx, cy, cfacing, l_speed, r_speed = observation.values()
         x, y, facing = self.get_target(cx,cy)
+        '''
         if cfacing >= 18:
             cfacing -= 24
+        '''
         action = ([0,0])
+        '''
         if cx != x:
             
             if cx - x < 0:
@@ -194,20 +197,28 @@ class Model:
             
         else:
             self.g_angle = 6
+        '''
+        goal = ((y-cy)/(np.tan(cfacing*np.pi/12))+cx)
         #print(cfacing, self.g_angle)
         if (x, y) == (cx, cy):
             action = ([-1,-1])
             self.state = 'reached'
-        if abs(l_speed * r_speed) <= 0.001:
+        elif abs(l_speed * r_speed) <= 0.001:
             action = ([1,1])
         elif np.round(l_speed,2) > np.round(r_speed,2):
             action = ([-1,0])
         elif np.round(l_speed,2) < np.round(r_speed,2):
             action = ([0,-1])
+        elif goal > x:
+            action = ([0,1])
+        elif goal < x:
+            action = ([1,0])
+        '''
         elif self.g_angle > cfacing:
             action = ([0,1])
         elif self.g_angle < cfacing:
             action = ([1,0])
+        '''
         return action
             
     def set_my_model(self):
