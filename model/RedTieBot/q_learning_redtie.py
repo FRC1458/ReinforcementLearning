@@ -321,7 +321,7 @@ if __name__ == '__main__':
     graphics = input("Show graphics? (y or n): ")
     if graphics == 'y':
         show = 'thousand'
-        num_g = 1000
+        num_g = 250
     elif graphics == 'a':
         show = 'thousand'
         num_g = 1
