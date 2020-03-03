@@ -14,12 +14,13 @@ import matplotlib.pyplot as plt
 from gym import wrappers
 from datetime import datetime
 from q_learning_bins import plot_running_avg
+import calculated_path
 
 
 # a version of HiddenLayer that keeps track of params
 class HiddenLayer:
   def __init__(self, M1, M2, f=tf.nn.tanh, use_bias=True):
-    self.W = tf.Variable(tf.random_normal(shape=(M1, M2)))
+    self.W = tf.Variable(tf.random.normal(shape=(M1, M2)))
     self.params = [self.W]
     self.use_bias = use_bias
     if use_bias:
@@ -36,8 +37,11 @@ class HiddenLayer:
 
 
 class DQN:
-  def __init__(self, D, K, hidden_layer_sizes, gamma, max_experiences=10000, min_experiences=100, batch_sz=32):
+  def __init__(self, D, K, hidden_layer_sizes, gamma, env, max_experiences=10000, min_experiences=100, batch_sz=32):
+    self.env = env
+    self.A = calculated_path.Path_Calculator(self.env)
     self.K = K
+    self.is_guided = False
 
     # create the graph
     self.layers = []
@@ -85,6 +89,12 @@ class DQN:
     self.min_experiences = min_experiences
     self.batch_sz = batch_sz
     self.gamma = gamma
+    self.rnd_path = np.random.random()
+    self.is_guided = self.rnd_path < 0.25
+
+  def reset(self):
+    self.is_guided = np.random.random() < 0.25
+    self.A.calculated_path.reset()
 
   def set_session(self, session):
     self.session = session
@@ -146,11 +156,14 @@ class DQN:
     self.experience['done'].append(done)
 
   def sample_action(self, x, eps):
-    if np.random.random() < eps:
-      return np.random.choice(self.K)
+    if self.is_guide:
+      self.A.calculated_path(x)
     else:
-      X = np.atleast_2d(x)
-      return np.argmax(self.predict(X)[0])
+      if np.random.random() < eps:
+        return self.env.action_space.sample()
+      else:
+        p=self.predict(s)
+        return self.env.action_space.fromQ(np.argmax(p))
 
 
 def play_one(env, model, tmodel, eps, gamma, copy_period):
@@ -158,18 +171,13 @@ def play_one(env, model, tmodel, eps, gamma, copy_period):
   done = False
   totalreward = 0
   iters = 0
-  while not done and iters < 2000:
-    # if we reach 2000, just quit, don't want this going forever
-    # the 200 limit seems a bit early
+  self.reset()
+  
+  while not done and iters < 10000:
     action = model.sample_action(observation, eps)
     prev_observation = observation
     observation, reward, done, info = env.step(action)
-
     totalreward += reward
-    if done:
-      reward = -200
-
-    # update the model
     model.add_experience(prev_observation, action, reward, observation, done)
     model.train(tmodel)
 
@@ -186,17 +194,17 @@ def main():
   gamma = 0.99
   copy_period = 50
 
-  D = len(env.observation_space.sample())
-  K = env.action_space.n
-  sizes = [200,200]
-  model = DQN(D, K, sizes, gamma)
-  tmodel = DQN(D, K, sizes, gamma)
+  D = 5
+  K = 9
+  sizes = [10,15,20,15,10]
+  model = DQN(D, K, sizes, gamma, env)
+  tmodel = DQN(D, K, sizes, gamma, env)
   init = tf.global_variables_initializer()
   session = tf.InteractiveSession()
   session.run(init)
   model.set_session(session)
   tmodel.set_session(session)
-
+  import pdb; pdb.set_trace()
 
   if 'monitor' in sys.argv:
     filename = os.path.basename(__file__).split('.')[0]
