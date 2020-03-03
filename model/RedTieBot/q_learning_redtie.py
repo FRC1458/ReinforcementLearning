@@ -266,7 +266,7 @@ def plot_running_avg(totalrewards):
     plt.plot(running_avg)
     plt.title('Rewards')
     plt.show()
-    print(totalrewards)
+    #print(totalrewards)
     nameeverything = input("save file? ")
     if nameeverything in ["yes", "y"]:
         model.save()
@@ -280,12 +280,13 @@ def mytest(env):
                 d = env.step2(j,k)[0]
                 nd = {'accn': j, 'speed': k, 'x': d['x']-10, 'y': d['y']-10, 'ang': d['facing']}
                 tn.append(nd)
-                print(nd)
-            print('====')
-        print('>>>')
+                #print(nd)
+            #print('====')
+        #print('>>>')
     #import pdb; pdb.set_trace()
+    
     import pprint
-    pprint.pprint(tn)
+    #pprint.pprint(tn)
     sys.exit(0)
 
 if __name__ == '__main__':
@@ -332,31 +333,34 @@ if __name__ == '__main__':
     
     for n in range(N):
         if show == 'last' and n == N-1:
+            '''
             env.graphics = True
             model.setGraphics()
             env.start()
             env.clearAndDraw()
+            '''
 
         eps=1.0/np.sqrt(n+1)
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
 
-
+'''
         if n%100==0:
             if not env.fast_mode:
-                print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
-                print("total rewards:", totalrewards.sum())
-            if n%1000==0:
-                print("1000 episodes have passed")
+                #print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
+                #print("total rewards:", totalrewards.sum())
+            	if n%1000==0:
+                #print("1000 episodes have passed")
 
-                if show == 'thousand':
-                    model.setGraphics(num_g)
-                    if n == 0:
-                        env.start()
-                        env.clearAndDraw()
+                	if show == 'thousand':
+                    	model.setGraphics(num_g)
+                    	if n == 0:
+                        	env.start()
+                        	env.clearAndDraw()
+                        	'''
 
     #plt.plot(totalrewards)
     #plt.title("Rewards")
     #plt.show()
-    plot_running_avg(totalrewards)
-    print('Total rewards are ' + str(totalreward) + '!')
+plot_running_avg(totalrewards)
+    #print('Total rewards are ' + str(totalreward) + '!')
