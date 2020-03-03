@@ -8,6 +8,7 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+import time
 import RedTieBot
 #from ttictoc import TicToc
 
@@ -271,6 +272,7 @@ def plot_running_avg(totalrewards):
     if nameeverything in ["yes", "y"]:
         model.save()
 
+'''
 def mytest(env):
     tn = []
     for j in range(1,5):
@@ -288,6 +290,7 @@ def mytest(env):
     import pprint
     #pprint.pprint(tn)
     sys.exit(0)
+'''
 
 if __name__ == '__main__':
     env = gym.make('redtiebot-v0')
@@ -305,10 +308,10 @@ if __name__ == '__main__':
     N=100
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
-    '''
-    #show = 'never'; env.graphics = False; env.show = 'never'
+    
+    show = 'never'; env.graphics = False; env.show = 'never'
     #show = 'thousand'; env.graphics = True; env.show = 'thousand'
-    show = 'last'; env.graphics = False; env.show = 'last'
+    #show = 'last'; env.graphics = False; env.show = 'last'
     env.fast_mode = True
     #env.fast_mode = False
     '''
@@ -330,10 +333,12 @@ if __name__ == '__main__':
         num_g = 1000
     else:
         show = 'never'    
-    
+    '''
+
     for n in range(N):
+        print(n)
+        '''
         if show == 'last' and n == N-1:
-            '''
             env.graphics = True
             model.setGraphics()
             env.start()
@@ -344,23 +349,23 @@ if __name__ == '__main__':
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
 
-'''
+
         if n%100==0:
             if not env.fast_mode:
-                #print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
-                #print("total rewards:", totalrewards.sum())
-            	if n%1000==0:
-                #print("1000 episodes have passed")
-
-                	if show == 'thousand':
-                    	model.setGraphics(num_g)
+                print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
+                print("total rewards:", totalrewards.sum())
+                if n%1000==0:
+                    #print("1000 episodes have passed")
+                    if show == 'thousand':
+                    	model.setGraphics()
                     	if n == 0:
                         	env.start()
                         	env.clearAndDraw()
-                        	'''
-
-    #plt.plot(totalrewards)
-    #plt.title("Rewards")
-    #plt.show()
-plot_running_avg(totalrewards)
-    #print('Total rewards are ' + str(totalreward) + '!')
+                        	
+    '''
+    plt.plot(totalrewards)
+    plt.title("Rewards")
+    plt.show()
+    plot_running_avg(totalrewards)
+    print('Total rewards are ' + str(totalreward) + '!')
+    '''
