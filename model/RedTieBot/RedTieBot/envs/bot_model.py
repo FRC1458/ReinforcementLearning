@@ -79,8 +79,8 @@ class BotModel(gym.Env):
             self.r_speed += 0.3*action[1]
             #in the list "action", the second value is the right wheel speed.
         except Exception as e:
-            #print(e)
             import pdb; pdb.set_trace()
+            print(e)
         if self.l_speed > 127:
             self.l_speed = 127
         elif self.l_speed < -128:
@@ -139,7 +139,7 @@ class BotModel(gym.Env):
             #end the game!
             #print(20*'>' + 'Reached')
             self.reward += 1000
-            #print("Made it -3")
+            print("Made it -3")
             #i get a lot of points
         if not self.is_over:
             x = self.x
@@ -239,7 +239,7 @@ class BotModel(gym.Env):
                     if facing > 2:
                         a.append((x,y,facing))
                         a_pos[(x,y)] = facing
-        #print(a)
+        print(a)
         return a, a_pos
 
     def moving(self, x,y,facing,t):
