@@ -15,6 +15,7 @@ from gym import wrappers
 from datetime import datetime
 from q_learning_bins import plot_running_avg
 import calculated_path
+tf.compat.v1.disable_eager_execution()
 
 
 # a version of HiddenLayer that keeps track of params
@@ -61,9 +62,9 @@ class DQN:
       self.params += layer.params
 
     # inputs and targets
-    self.X = tf.placeholder(tf.float32, shape=(None, D), name='X')
-    self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
-    self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
+    self.X = tf.compat.v1.placeholder(tf.float32, shape=(None, D), name='X')
+    self.G = tf.compat.v1.placeholder(tf.float32, shape=(None,), name='G')
+    self.actions = tf.compat.v1.placeholder(tf.int32, shape=(None,), name='actions')
 
     # calculate output and cost
     Z = self.X
@@ -73,12 +74,12 @@ class DQN:
     self.predict_op = Y_hat
 
     selected_action_values = tf.reduce_sum(
-      Y_hat * tf.one_hot(self.actions, K),
-      reduction_indices=[1]
+      input_tensor=Y_hat * tf.one_hot(self.actions, K),
+      axis=[1]
     )
 
-    cost = tf.reduce_sum(tf.square(self.G - selected_action_values))
-    self.train_op = tf.train.AdamOptimizer(1e-2).minimize(cost)
+    cost = tf.reduce_sum(input_tensor=tf.square(self.G - selected_action_values))
+    self.train_op = tf.compat.v1.train.AdamOptimizer(1e-2).minimize(cost)
     # self.train_op = tf.train.AdagradOptimizer(1e-2).minimize(cost)
     # self.train_op = tf.train.MomentumOptimizer(1e-3, momentum=0.9).minimize(cost)
     # self.train_op = tf.train.GradientDescentOptimizer(1e-4).minimize(cost)
@@ -94,7 +95,7 @@ class DQN:
 
   def reset(self):
     self.is_guided = np.random.random() < 0.25
-    self.A.calculated_path.reset()
+    self.A.reset()
 
   def set_session(self, session):
     self.session = session
@@ -156,13 +157,13 @@ class DQN:
     self.experience['done'].append(done)
 
   def sample_action(self, x, eps):
-    if self.is_guide:
+    if self.is_guided:
       self.A.calculated_path(x)
     else:
       if np.random.random() < eps:
         return self.env.action_space.sample()
       else:
-        p=self.predict(s)
+        p=self.predict(x)
         return self.env.action_space.fromQ(np.argmax(p))
 
 
@@ -171,7 +172,8 @@ def play_one(env, model, tmodel, eps, gamma, copy_period):
   done = False
   totalreward = 0
   iters = 0
-  self.reset()
+  model.reset()
+  tmodel.reset()
   
   while not done and iters < 10000:
     action = model.sample_action(observation, eps)
@@ -199,8 +201,8 @@ def main():
   sizes = [10,15,20,15,10]
   model = DQN(D, K, sizes, gamma, env)
   tmodel = DQN(D, K, sizes, gamma, env)
-  init = tf.global_variables_initializer()
-  session = tf.InteractiveSession()
+  init = tf.compat.v1.global_variables_initializer()
+  session = tf.compat.v1.InteractiveSession()
   session.run(init)
   model.set_session(session)
   tmodel.set_session(session)
