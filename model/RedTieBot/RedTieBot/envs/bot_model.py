@@ -57,7 +57,6 @@ class BotModel(gym.Env):
         self.action_space = ActionSpace()
         #The range of speeds that the wheel can have.
         self.path = []
-        self.fast_mode = 0
         self.num_graph = 1000
         self.graphics = False
 
@@ -208,7 +207,7 @@ class BotModel(gym.Env):
                 x = np.random.randint(82)
                 y = np.random.randint(159)
                 #generate a point for the robot to spawn in
-                if not self.invalid_point_fast(x,y):
+                if not self.invalid_point(x,y):
                     return x,y,facing
                 #if the visuals are not there, also return the coordinates and direction of the robot so the robot knows what to do relative to it's coordinates
         else:

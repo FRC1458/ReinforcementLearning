@@ -236,6 +236,7 @@ class Model:
         self.try_model.r_speed = self.env.r_speed
 
 def play_one(model,eps,gamma):
+    ticc = time.time()
     observation=env.reset()
     model.reset()
     done=False
@@ -257,6 +258,9 @@ def play_one(model,eps,gamma):
 
     #if totalreward > 0:
         #print(path)
+
+    tics.append(time.time()-ticc)
+
     return totalreward
 
 def plot_running_avg(totalrewards):
@@ -335,8 +339,11 @@ if __name__ == '__main__':
         show = 'never'    
     '''
 
+    tics = []
+
     for n in range(N):
         print(n)
+
         '''
         if show == 'last' and n == N-1:
             env.graphics = True
@@ -349,7 +356,6 @@ if __name__ == '__main__':
         totalreward=play_one(model, eps, gamma)
         totalrewards[n] = totalreward
 
-
         if n%100==0:
             if not env.fast_mode:
                 print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
@@ -361,7 +367,9 @@ if __name__ == '__main__':
                     	if n == 0:
                         	env.start()
                         	env.clearAndDraw()
-                        	
+    
+    print(str((sum(tics)/len(tics))) + " seconds average episode runtime.")
+
     '''
     plt.plot(totalrewards)
     plt.title("Rewards")
