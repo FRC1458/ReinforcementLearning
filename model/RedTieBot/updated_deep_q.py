@@ -114,7 +114,8 @@ class DQN:
 
   def predict(self, X):
     X = np.atleast_2d(X)
-    return self.session.run(self.predict_op, feed_dict={self.X: X})
+    return self.session.run(self.predict_op,
+                            feed_dict={self.X: X}) 
 
   def train(self, target_network):
     # sample a random batch from buffer, do an iteration of GD
@@ -137,7 +138,7 @@ class DQN:
     self.session.run(
       self.train_op,
       feed_dict={
-        self.X: states,+
+        self.X: states,
         self.G: targets,
         self.actions: actions
       }
@@ -158,12 +159,12 @@ class DQN:
 
   def sample_action(self, x, eps):
     if self.is_guided:
-      self.A.calculated_path(x)
+      return self.A.calculated_path(x)
     else:
       if np.random.random() < eps:
         return self.env.action_space.sample()
       else:
-        p=self.predict(x)
+        p=self.predict(list(x.values()))
         return self.env.action_space.fromQ(np.argmax(p))
 
 
@@ -180,7 +181,9 @@ def play_one(env, model, tmodel, eps, gamma, copy_period):
     prev_observation = observation
     observation, reward, done, info = env.step(action)
     totalreward += reward
-    model.add_experience(prev_observation, action, reward, observation, done)
+    a = tf.one_hot(env.action_space.get_idx(action), len(env.action_space))
+    model.add_experience(list(prev_observation.values()), a, reward,
+                         list(observation.values()), done)
     model.train(tmodel)
 
     iters += 1

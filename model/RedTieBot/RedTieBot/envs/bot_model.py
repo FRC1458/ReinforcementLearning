@@ -10,7 +10,11 @@ class ActionSpace:
     def __init__(self):
         self._spaces = np.array([(-1,-1), (-1,0), (-1,1), (0,-1),
                                 (0,0), (0,1), (1,-1), (1,0), (1,1)])
+        self._ln = len(self._spaces)
 
+    def __len__(self):
+        return self._ln
+        
     def get_idx(self, a):
         return np.where((self._spaces[:,0] == a[0]) & (self._spaces[:,1] == a[1]))[0][0]
         
