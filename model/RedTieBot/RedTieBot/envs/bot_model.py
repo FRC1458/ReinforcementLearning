@@ -3,7 +3,7 @@ import numpy as np
 import gym.spaces.box as b
 import gym
 import turtle
-#we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
+#we need numpy, gym and turtle present here. np is shorthand for numpy.
 #a=tu.Turtle()
 #a.speed(0)
 class ActionSpace:
@@ -28,8 +28,7 @@ class ActionSpace:
 
 class BotModel(gym.Env):
     def __init__(self):
-        self.s = 2
-        #the scale of the graphics
+        self.s = 2 #the scale of the graphics
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a, self.a_pos = self.reward_point()
@@ -55,7 +54,10 @@ class BotModel(gym.Env):
         #the game is not over yet.
         self.reward = 0#the  a rewarded to the robot during the simulation
         self.counter = 0
-        self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
+        self.max_x = 82
+        self.max_y = 160
+        self.max_facing = 24
+        #self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
         #The box is technically a 1x1x1 cube.
         self.action_space = ActionSpace()

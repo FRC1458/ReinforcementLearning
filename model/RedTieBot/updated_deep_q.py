@@ -11,10 +11,15 @@ import sys
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import calculated_path
+import copy
 from gym import wrappers
+from tensorflow.keras import Model, Sequential
+from tensorflow.keras.layers import Dense, Embedding, Reshape
+from tensorflow.keras.optimizers import Adam
 from datetime import datetime
 from q_learning_bins import plot_running_avg
-import calculated_path
+
 tf.compat.v1.disable_eager_execution()
 
 
@@ -42,57 +47,83 @@ class DQN:
     self.env = env
     self.A = calculated_path.Path_Calculator(self.env)
     self.K = K
+    self.D = D
     self.is_guided = False
+    self.max_x = env.max_x
+    self.max_y = env.max_y
+    self.max_theta = env.max_facing
+    self.num_states = self.max_x * self.max_y * self.max_theta
 
     # create the graph
-    self.layers = []
+    
+    #self.layers = []
+    #self.model = Sequential()
+    inputs = tf.keras.Input(shape = (5,))
+    x = inputs
+    #self.model.add(Embedding(D, K, input_length=1))
     M1 = D
     for M2 in hidden_layer_sizes:
-      layer = HiddenLayer(M1, M2)
-      self.layers.append(layer)
+      #layer = HiddenLayer(M1, M2)
+      #self.layers.append(layer)
+      #self.model.add(Dense(M2, activation='relu'))
+      x = Dense(M2, activation='relu')(x)
       M1 = M2
 
     # final layer
-    layer = HiddenLayer(M1, K, lambda x: x)
-    self.layers.append(layer)
+    #layer = HiddenLayer(M1, 1, lambda x: x)
+    #self.model.add(Dense(K, activation='linear'))
+    y_hat = Dense(K, activation='linear')(x)
+    self.model = Model(inputs = inputs, outputs = y_hat)
+    #self.layers.append(layer)
+    self.model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(
+      from_logits=True), optimizer=Adam(0.01))
 
     # collect params for copy
+    '''
     self.params = []
     for layer in self.layers:
       self.params += layer.params
-
+    
     # inputs and targets
     self.X = tf.compat.v1.placeholder(tf.float32, shape=(None, D), name='X')
     self.G = tf.compat.v1.placeholder(tf.float32, shape=(None,), name='G')
-    self.actions = tf.compat.v1.placeholder(tf.int32, shape=(None,), name='actions')
-
+    self.actions = tf.compat.v1.placeholder(tf.int32, shape=(None,K), name='actions')
+    
     # calculate output and cost
     Z = self.X
     for layer in self.layers:
       Z = layer.forward(Z)
     Y_hat = Z
     self.predict_op = Y_hat
-
+    selected_action_values = tf.argmax(self.predict_op, output_type = tf.dtypes.float32)
+    
     selected_action_values = tf.reduce_sum(
       input_tensor=Y_hat * tf.one_hot(self.actions, K),
       axis=[1]
     )
-
+    
+    
     cost = tf.reduce_sum(input_tensor=tf.square(self.G - selected_action_values))
     self.train_op = tf.compat.v1.train.AdamOptimizer(1e-2).minimize(cost)
     # self.train_op = tf.train.AdagradOptimizer(1e-2).minimize(cost)
     # self.train_op = tf.train.MomentumOptimizer(1e-3, momentum=0.9).minimize(cost)
     # self.train_op = tf.train.GradientDescentOptimizer(1e-4).minimize(cost)
-
+    '''
     # create replay memory
+    self.load()
     self.experience = {'s': [], 'a': [], 'r': [], 's2': [], 'done': []}
     self.max_experiences = max_experiences
     self.min_experiences = min_experiences
     self.batch_sz = batch_sz
     self.gamma = gamma
-    self.rnd_path = np.random.random()
-    self.is_guided = self.rnd_path < 0.25
 
+  def load(self):
+    if os.path.exists('save_Q.npy'):
+      self.Q = np.load('save_Q.npy')
+    else:
+      self.Q = np.random.uniform(low=-1, high=1, size=(self.num_states, self.K))
+
+    
   def reset(self):
     self.is_guided = np.random.random() < 0.25
     self.A.reset()
@@ -101,28 +132,18 @@ class DQN:
     self.session = session
 
   def copy_from(self, other):
-    # collect all the ops
-    ops = []
-    my_params = self.params
-    other_params = other.params
-    for p, q in zip(my_params, other_params):
-      actual = self.session.run(q)
-      op = p.assign(actual)
-      ops.append(op)
-    # now run them all
-    self.session.run(ops)
+    self.model.set_weights(other.model.get_weights())
 
   def predict(self, X):
     X = np.atleast_2d(X)
-    return self.session.run(self.predict_op,
-                            feed_dict={self.X: X}) 
+    return np.argmax(self.model.predict(X))
 
   def train(self, target_network):
     # sample a random batch from buffer, do an iteration of GD
     if len(self.experience['s']) < self.min_experiences:
       # don't do anything if we don't have enough experience
       return
-
+    
     # randomly select a batch
     idx = np.random.choice(len(self.experience['s']), size=self.batch_sz, replace=False)
     # print("idx:", idx)
@@ -131,10 +152,22 @@ class DQN:
     rewards = [self.experience['r'][i] for i in idx]
     next_states = [self.experience['s2'][i] for i in idx]
     dones = [self.experience['done'][i] for i in idx]
+    '''
+    for i in idx:
+      self.update_reward(self.experience['s'][i], self.experience['a'][i],
+                         self.experience['done'][i], self.experience['r'][i],
+                         self.experience['s2'][i], target_network)
+             
+
     next_Q = np.max(target_network.predict(next_states), axis=1)
     targets = [r + self.gamma*next_q if not done else r for r, next_q, done in zip(rewards, next_Q, dones)]
-
+    '''
+    
+    targets = [self.update_reward(self.experience['s'][i], self.experience['a'][i],
+                         self.experience['done'][i], self.experience['r'][i],
+                         self.experience['s2'][i], target_network) for i in idx ]
     # call optimizer
+    '''
     self.session.run(
       self.train_op,
       feed_dict={
@@ -143,6 +176,24 @@ class DQN:
         self.actions: actions
       }
     )
+    '''
+    self.model.fit([states], [targets], verbose = 0)
+
+  def update_reward(self, state, action, is_done, reward, next_state, target):
+    if is_done:
+      target.Q[state[2]+self.max_theta*state[1] + \
+             self.max_y*self.max_theta*state[0]][action] = reward
+      return action
+    else:
+      a = target.predict(next_state)
+      vi = np.argmax(target.Q[next_state[2]+self.max_theta*next_state[1] + \
+             self.max_y*self.max_theta*next_state[0]])
+      target.Q[state[2]+self.max_theta*state[1] + \
+             self.max_y*self.max_theta*state[0]][action] = reward + self.gamma * \
+             target.Q[next_state[2]+self.max_theta*next_state[1] + \
+             self.max_y*self.max_theta*next_state[0]][vi]
+      return a
+               
 
   def add_experience(self, s, a, r, s2, done):
     if len(self.experience['s']) >= self.max_experiences:
@@ -181,7 +232,8 @@ def play_one(env, model, tmodel, eps, gamma, copy_period):
     prev_observation = observation
     observation, reward, done, info = env.step(action)
     totalreward += reward
-    a = tf.one_hot(env.action_space.get_idx(action), len(env.action_space))
+    #a = tf.one_hot(env.action_space.get_idx(action), len(env.action_space))
+    a = env.action_space.get_idx(action)
     model.add_experience(list(prev_observation.values()), a, reward,
                          list(observation.values()), done)
     model.train(tmodel)
@@ -205,10 +257,10 @@ def main():
   model = DQN(D, K, sizes, gamma, env)
   tmodel = DQN(D, K, sizes, gamma, env)
   init = tf.compat.v1.global_variables_initializer()
-  session = tf.compat.v1.InteractiveSession()
-  session.run(init)
-  model.set_session(session)
-  tmodel.set_session(session)
+  #session = tf.compat.v1.InteractiveSession()
+  #session.run(init)
+  #model.set_session(session)
+  #tmodel.set_session(session)
   import pdb; pdb.set_trace()
 
   if 'monitor' in sys.argv:
