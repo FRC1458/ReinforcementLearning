@@ -33,8 +33,8 @@ class BotModel(gym.Env):
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a, self.a_pos = self.reward_point()
-        self.w=5
-        #width of robot
+        self.w=7.112
+        #width of robot (same as length)
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
         self.x0=0
@@ -159,35 +159,37 @@ class BotModel(gym.Env):
                     self.is_over = True
 
     def invalid_point(self, x, y):
-        if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
+        r = 5.029
+        
+        if (y <= -0.364 * x + 6.255 + r) or (y <= 0.364 * x - 23.626 + r) or (y >= 0.364 * x + 153.545 - r) or (y >= -0.364 * x + 183.426 - r):
             return True
             #robot ran into the triangles in the corners and loses points
 
-        if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
+        if y > 87.526 - r and y < 95.146 + r and x > 0 and x < 14.1 + r:
             return True
             #robot ran into the east spinner and loses points
 
-        if y > 64.68 and y < 72.3 and x > 68 and x < 82:
+        if y > 64.68 - r and y < 72.3 + r and x > 68 - r and x < 82:
             return True
             #robot ran into the west spinner and loses points
 
-        if x > 82.1 or y > 159.8 or x < 0 or y<0:
+        if x > 82.1 - r or y > 159.8 - r or x < 0 + r or y < 0 + r:
             return True
             #robot went outside the barrier
 
-        if (y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91) and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871)):
+        if ((y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91) - r and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) + r) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) + ((106.936-105.979)/(49.478-49.91))r and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871) - ((107.36-106.403)/(50.439-50.871))r):
             return True
             #robot ran into the top right pillar of the rendezvous point
 
-        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244)) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604)):
+        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) - r and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244) + r) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666)+((53.403-52.469)/(31.244-31.666))r and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604) - ((53.817-52.883)/(32.182-32.604))r):
             return True
             #robot ran into the bottom left pillar of the rendezvous point
 
-        if ((y-90.379)>=((90.799-90.379)/(15.42-14.529))*(x-14.529) and (y-91.336)<=((91.76-91.336)/(15.056-14.097))*(x-14.097)) and ((y-90.379)>=((91.336-90.379)/(14.097-14.529))*(x-14.529) and (y-90.799)<=((91.76-90.799)/(15.056-15.42))*(x-15.42)):
+        if ((y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91)-r and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) + r) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) + ((53.403-52.469)/(31.244-31.666))r and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604) - ((53.817-52.883)/(32.182-32.604))r):
             return True
             #robot ran into the top left pillar of the rendezvous point
 
-        if ((y-68.07)>=((68.494-68.07)/(68-67.039))*(x-67.039) and (y-69.027)<=((69.451-69.027)/(67.568-66.607))*(x-66.607)) and ((y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68)):
+        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) - r and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244) + r) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91)+((106.936-105.979)/(49.478-49.91))r and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871)-((107.36-106.403)/(50.439-50.871))r):
              return True
              #robot ran into the bottom right pillar of the rendezvous point
         return False
