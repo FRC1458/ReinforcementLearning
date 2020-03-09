@@ -3,14 +3,18 @@ import numpy as np
 import gym.spaces.box as b
 import gym
 import turtle
-#we need numpy, gym and pygame present here. np and pg is merely shorthand for numpy and pygame, respectively.
+#we need numpy, gym and turtle present here. np is shorthand for numpy.
 #a=tu.Turtle()
 #a.speed(0)
 class ActionSpace:
     def __init__(self):
         self._spaces = np.array([(-1,-1), (-1,0), (-1,1), (0,-1),
                                 (0,0), (0,1), (1,-1), (1,0), (1,1)])
+        self._ln = len(self._spaces)
 
+    def __len__(self):
+        return self._ln
+        
     def get_idx(self, a):
         return np.where((self._spaces[:,0] == a[0]) & (self._spaces[:,1] == a[1]))[0][0]
         
@@ -24,13 +28,12 @@ class ActionSpace:
 
 class BotModel(gym.Env):
     def __init__(self):
-        self.s = 2
-        #the scale of the graphics
+        self.s = 2 #the scale of the graphics
         self.minShootDist = 5 #This is the MINIMUM Distance from away the target
         self.maxShootDist = 10 #This is the MAXIMUM Distance away from the target
         self.a, self.a_pos = self.reward_point()
-        self.w=5
-        #width of robot
+        self.w=7.112
+        #width of robot (same as length)
         self.t=0.5
         #round to the nearest .5 seconds when dealing with time
         self.x0=0
@@ -51,7 +54,10 @@ class BotModel(gym.Env):
         #the game is not over yet.
         self.reward = 0#the  a rewarded to the robot during the simulation
         self.counter = 0
-        self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
+        self.max_x = 82
+        self.max_y = 160
+        self.max_facing = 24
+        #self.observation_space = b.Box(0, 1.0, shape=(int(821/10), int(1598/10), 24))
         #The structure of the data that will be returned by the environment. It's the dimensions of the field (without obstacles at the moment)
         #The box is technically a 1x1x1 cube.
         self.action_space = ActionSpace()
@@ -155,37 +161,38 @@ class BotModel(gym.Env):
                     self.is_over = True
 
     def invalid_point(self, x, y):
-        if (y <= -0.364 * x + 6.255) or (y <= 0.364 * x - 23.626) or (y >= 0.364 * x + 153.545) or (y >= -0.364 * x + 183.426):
-            return True
-            #robot ran into the triangles in the corners and loses points
+        r = 5.029
+        if (y <= -0.364 * x + 6.255 + r) or (y <= 0.364 * x - 23.626 + r) or (y >= 0.364 * x + 153.545 - r) or (y >= -0.364 * x + 183.426 - r): 
+            return True 
+            #robot ran into the triangles in the corners and loses points 
 
-        if y > 87.526 and y < 95.146 and x > 0 and x < 14.1:
-            return True
-            #robot ran into the east spinner and loses points
+        if y > 87.526 - r and y < 95.146 + r and x > 0 and x < 14.1 + r: 
+            return True 
+            #robot ran into the east spinner and loses points 
 
-        if y > 64.68 and y < 72.3 and x > 68 and x < 82:
-            return True
-            #robot ran into the west spinner and loses points
+        if y > 64.68 - r and y < 72.3 + r and x > 68 - r and x < 82: 
+            return True 
+            #robot ran into the west spinner and loses points 
 
-        if x > 82.1 or y > 159.8 or x < 0 or y<0:
-            return True
+        if x > 82.1 - r or y > 159.8 - r or x < 0 + r or y < 0 + r: 
+            return True 
             #robot went outside the barrier
 
-        if (y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91) and (y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) and (y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871)):
-            return True
-            #robot ran into the top right pillar of the rendezvous point
+        if ((y-105.979)>=(((106.403-105.979)/(50.871-49.91))*(x-49.91)) - r) and ((y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) + r) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91) + ((106.936-105.979)/(49.478-49.91))*r) and ((y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871) - ((107.36-106.403)/(50.439-50.871))*r): 
+            return True 
+            #robot ran into the top right pillar of the rendezvous point 
 
-        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) and (y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244)) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) and (y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604)):
-            return True
-            #robot ran into the bottom left pillar of the rendezvous point
+        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) - r) and ((y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244) + r) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666)+((53.403-52.469)/(31.244-31.666))*r) and ((y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604) - ((53.817-52.883)/(32.182-32.604))*r):
+            return True 
+            #robot ran into the bottom left pillar of the rendezvous point 
 
-        if ((y-90.379)>=((90.799-90.379)/(15.42-14.529))*(x-14.529) and (y-91.336)<=((91.76-91.336)/(15.056-14.097))*(x-14.097)) and ((y-90.379)>=((91.336-90.379)/(14.097-14.529))*(x-14.529) and (y-90.799)<=((91.76-90.799)/(15.056-15.42))*(x-15.42)):
-            return True
-            #robot ran into the top left pillar of the rendezvous point
+        if ((y-105.979)>=((106.403-105.979)/(50.871-49.91))*(x-49.91)-r) and ((y-106.936)<=((107.36-106.936)/(50.439-49.478))*(x-49.478) + r) and ((y-52.469)>=((53.403-52.469)/(31.244-31.666))*(x-31.666) + ((53.403-52.469)/(31.244-31.666))*r) and ((y-52.883)<=((53.817-52.883)/(32.182-32.604))*(x-32.604) - ((53.817-52.883)/(32.182-32.604))*r): 
+            return True 
+            #robot ran into the top left pillar of the rendezvous point 
 
-        if ((y-68.07)>=((68.494-68.07)/(68-67.039))*(x-67.039) and (y-69.027)<=((69.451-69.027)/(67.568-66.607))*(x-66.607)) and ((y-68.07)>=((69.027-68.07)/(66.607-67.039))*(x-67.039) and (y-68.494)<=((69.451-68.494)/(67.568-68))*(x-68)):
-             return True
-             #robot ran into the bottom right pillar of the rendezvous point
+        if ((y-52.469)>=((52.883-52.469)/(32.604-31.666))*(x-31.666) - r) and ((y-53.403)<=((53.817-53.403)/(32.182-31.244))*(x-31.244) + r) and ((y-105.97)>=((106.936-105.979)/(49.478-49.91))*(x-49.91)+((106.936-105.979)/(49.478-49.91))*r) and ((y-106.403)<=((107.36-106.403)/(50.439-50.871))*(x-50.871)-((107.36-106.403)/(50.439-50.871))*r): 
+            return True 
+            #robot ran into the bottom right pillar of the rendezvous point 
         return False
 
     def render(self, mode='human'):
@@ -279,7 +286,7 @@ class BotModel(gym.Env):
     def clearAndDraw(self):
         s = self.s
         if self.graphics:
-            self.trt.shape('arrow')
+            self.trt.shape('square')
             self.trt.speed(0)
             self.trt.clear()
             self.trt.penup()

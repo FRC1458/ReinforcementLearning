@@ -107,8 +107,10 @@ class Model:
             return self.env.action_space.fromQ(np.argmax(p))
         
     def setGraphics(self, num):
-        env.num_graph = num
-        env.graphics = True
+        if num != None:
+            env.num_graph = num
+            env.graphics = True
+            env.start()
 
     def stopGraphics(self):
         env.graphics = False
@@ -312,7 +314,7 @@ if __name__ == '__main__':
     N=100
     totalrewards=np.empty(N)
     import pdb; pdb.set_trace()
-    
+    '''
     show = 'never'; env.graphics = False; env.show = 'never'
     #show = 'thousand'; env.graphics = True; env.show = 'thousand'
     #show = 'last'; env.graphics = False; env.show = 'last'
@@ -336,8 +338,10 @@ if __name__ == '__main__':
         show = 'last'
         num_g = 1000
     else:
-        show = 'never'    
-    '''
+        show = 'never'
+        num_g = None
+    model.setGraphics(num_g)
+    
 
     tics = []
 
@@ -360,13 +364,12 @@ if __name__ == '__main__':
             if not env.fast_mode:
                 print("avg reward for last 100 episodes:", totalrewards[-100:].mean())
                 print("total rewards:", totalrewards.sum())
-                if n%1000==0:
-                    #print("1000 episodes have passed")
-                    if show == 'thousand':
-                    	model.setGraphics()
-                    	if n == 0:
-                        	env.start()
-                        	env.clearAndDraw()
+            if n%1000==0:
+                #print("1000 episodes have passed")
+                if num_g != None:
+                    if n == 0:
+                        env.start()
+                    env.clearAndDraw()
     
     print(str((sum(tics)/len(tics))) + " seconds average episode runtime.")
 
